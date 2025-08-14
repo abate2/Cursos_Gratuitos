@@ -37,12 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
-    'cursos',
+    'rest_framework', # Para crear la API
+    'corsheaders',    # Para permitir la conexión desde React corsheaders: La API de Django y tu app de React vivirán en direcciones diferentes (por ejemplo, localhost:8000 y localhost:3000). Este módulo permite que se comuniquen sin que el navegador bloquee la conexión por seguridad.
+    'cursos',         # Tu aplicación de cursos
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -123,3 +124,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de CORS
+CORS_ALLOW_ALL_ORIGINS = True
