@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework', # Para crear la API
     'corsheaders',    # Para permitir la conexión desde React corsheaders: La API de Django y tu app de React vivirán en direcciones diferentes (por ejemplo, localhost:8000 y localhost:3000). Este módulo permite que se comuniquen sin que el navegador bloquee la conexión por seguridad.
     'cursos',         # Tu aplicación de cursos
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static' # <--- Añade o confirma esta línea
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -127,3 +130,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración de CORS
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Configuración para subir archivos
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Configuración de CKEditor
+CKEDITOR_UPLOAD_PATH = 'uploads/ckeditor/'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['Table', 'TextColor', 'BGColor'],
+            ['Styles', 'Format', 'Font', 'FontSize'],
+            ['Source']
+        ]
+    }
+}

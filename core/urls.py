@@ -19,6 +19,8 @@ Including another URLconf
 # de datos a través de /admin/.
 from django.contrib import admin
 from django.urls import path, include # <-- Asegúrate de importar 'include'
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
 #Esto crea la ruta /admin/ que carga la interfaz de administración de Django.
@@ -28,4 +30,10 @@ urlpatterns = [
 #con el fin de hacer las rutas  mas  ordenadas   
     path('admin/', admin.site.urls),
     path('api/', include('cursos.urls')), # <-- Esto incluye todas las rutas de la app 'cursos' en la dirección '/api/'
+    path('ckeditor/', include('ckeditor_uploader.urls')), # <--- ¡Añade esto!
 ]
+
+# Necesario para servir archivos estáticos y archivos subidos en modo de desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

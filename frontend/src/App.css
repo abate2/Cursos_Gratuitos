@@ -103,6 +103,165 @@ a {
   cursor: pointer; /* <-- Cambia el cursor para indicar que es clickeable */
 }
 
+/* Estilos para el contenedor de la lección */
+.lecciones-container {
+  display: flex; /* <-- Organiza los dos paneles uno al lado del otro */
+  gap: 20px;
+}
+
+/* Estilos para el panel de la lista de lecciones */
+.lecciones-list {
+  flex: 1; /* <-- Ocupa 1 parte del espacio disponible */
+}
+
+/* Estilos para el panel del contenido de la lección */
+.leccion-content {
+  flex: 2; /* <-- Ocupa 2 partes del espacio disponible (más grande) */
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Estilo para la lección actualmente seleccionada */
+.lecciones-list .active {
+  background-color: #007bff !important; /* <-- Color de fondo para la lección activa */
+  color: #fff; /* <-- Color de texto blanco */
+  font-weight: bold;
+}
+
+/* Estilos para los botones de navegación */
+.leccion-buttons {
+  display: flex;
+  justify-content: space-between; /* <-- Coloca los botones en los extremos */
+  margin-top: 20px;
+}
+
+.leccion-buttons button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.leccion-buttons button:hover:not([disabled]) {
+  background-color: #0056b3;
+}
+
+/* Estilo para los botones deshabilitados */
+.leccion-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Estilos para el contenedor de la lección */
+.lecciones-container {
+  display: flex; /* <-- Habilita el flexbox para una distribución flexible */
+  gap: 20px;
+  align-items: flex-start; /* <-- Alinea el contenido al inicio */
+}
+
+/* Estilos para el panel del menú de lecciones */
+.lecciones-list {
+  flex-shrink: 0; /* <-- Evita que se encoja */
+  width: 250px; /* <-- Ancho fijo para el menú lateral */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.lecciones-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.lecciones-list li {
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.lecciones-list li:hover {
+  background-color: #e0e0e0;
+}
+
+.lecciones-list li.active {
+  background-color: #007bff; /* <-- Color de fondo para la lección activa */
+  color: #fff; /* <-- Color de texto blanco */
+  font-weight: bold;
+}
+
+/* Estilos para el panel del contenido de la lección */
+.leccion-content {
+  flex-grow: 1; /* <-- Ocupa todo el espacio restante */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para los botones de navegación */
+.leccion-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 50%; /* <-- Centers the element horizontally */
+  transform: translateX(-50%); /* <-- Corrects the centering */
+  width: 100%;
+  max-width: 800px; /* <-- Matches the max-width of .course-detail */
+  
+  display: flex;
+  justify-content: space-between;
+  
+  padding: 15px 30px;
+  background-color: #f0f2f5;
+  border-top: 1px solid #ddd;
+  z-index: 100;
+  
+  box-sizing: border-box; /* <-- Ensures padding doesn't affect the width */
+}
+
+/* El resto de estilos de los botones (que ya teníamos) */
+.leccion-buttons button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.leccion-buttons button:hover:not([disabled]) {
+  background-color: #0056b3;
+}
+
+.leccion-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Media Query para el diseño responsivo de la página de detalle */
+@media (max-width: 768px) {
+  .lecciones-container {
+    flex-direction: column; /* <-- Apila los paneles en pantallas pequeñas */
+  }
+
+  .lecciones-list {
+    width: 100%; /* <-- Ocupa todo el ancho en móviles */
+  }
+}
+
+/* Media Query para el diseño responsivo de la página de detalle */
+@media (max-width: 768px) {
+  .lecciones-container {
+    flex-direction: column; /* <-- Apila los paneles en pantallas pequeñas */
+  }
+}
 /* Media Queries para la página de detalle en pantallas pequeñas */
 @media (max-width: 768px) {
   .course-detail {
