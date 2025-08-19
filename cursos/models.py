@@ -24,3 +24,21 @@ class Leccion(models.Model):
 
     def __str__(self):
         return f'{self.orden}. {self.titulo}'
+
+# --- Nuevo Modelo para las Flashcards ---
+class Flashcard(models.Model):
+    # La palabra en el idioma que estás enseñando (ej. inglés)
+    palabra = models.CharField(max_length=100)
+    # La traducción o significado (ej. español)
+    significado = models.TextField()
+    # Opcional: Un ejemplo de uso de la palabra
+    ejemplo = models.TextField(blank=True, null=True)
+    # Opcional: Relacionar la flashcard con una lección específica
+    leccion = models.ForeignKey(Leccion, on_delete=models.CASCADE, related_name='flashcards', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.palabra} - {self.significado}'
+
+    class Meta:
+        verbose_name = "Flashcard"
+        verbose_name_plural = "Flashcards"

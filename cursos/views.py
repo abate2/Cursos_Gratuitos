@@ -1,13 +1,36 @@
 # cursos/views.py
 from rest_framework import generics
-from .models import Curso, Leccion
-from .serializers import CursoSerializer, LeccionSerializer
+from rest_framework.response import Response 
 
-class CursoListView(generics.ListAPIView):
+from .models import Curso, Leccion, Flashcard
+from .serializers import CursoSerializer, LeccionSerializer, FlashcardSerializer
+
+
+class CursoListCreate(generics.ListCreateAPIView):
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
 
-# This class must be present and correctly named
-class CursoDetailView(generics.RetrieveAPIView):
+class CursoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
+
+class LeccionListCreate(generics.ListCreateAPIView):
+    queryset = Leccion.objects.all()
+    serializer_class = LeccionSerializer
+
+class LeccionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Leccion.objects.all()
+    serializer_class = LeccionSerializer
+
+class LeccionFlashcardsList(generics.ListAPIView):
+    serializer_class = FlashcardSerializer
+
+    def get_queryset(self):
+        leccion_id = self.kwargs['pk']
+        return Flashcard.objects.filter(leccion__id=leccion_id)
+
+# --- Nueva Vista para listar TODAS las Flashcards ---
+class FlashcardList(generics.ListAPIView):
+    queryset = Flashcard.objects.all()
+    serializer_class = FlashcardSerializer
+

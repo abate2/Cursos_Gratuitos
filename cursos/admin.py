@@ -1,10 +1,8 @@
 # cursos/admin.py
 from django.contrib import admin
-from .models import Curso, Leccion # Importa los modelos que acabas de crear.
+from .models import Curso, Leccion, Flashcard # Asegúrate de importar Flashcard
 
-# Registra tus modelos en el sitio de administración.
-# Sin estas dos líneas, tus modelos no aparecerían en el panel.
+# Registra tus modelos aquí.
 admin.site.register(Curso)
 admin.site.register(Leccion)
-
-# Register your models here.
+admin.site.register(Flashcard) # <-- ¡Añade esto!

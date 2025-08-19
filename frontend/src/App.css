@@ -245,6 +245,114 @@ a {
   cursor: not-allowed;
 }
 
+/* Estilos generales para el contenedor de las flashcards */
+.flashcards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 200px por tarjeta */
+  gap: 20px;
+  padding: 20px;
+  max-width: 1000px; /* Limita el ancho del juego */
+  margin: 20px auto; /* Centra el juego */
+}
+
+/* Estilos para cada flashcard individual */
+.flashcard {
+  background-color: transparent;
+  width: 100%;
+  height: 150px; /* Altura fija para las tarjetas */
+  perspective: 1000px; /* Para la animación 3D de volteo */
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.6s;
+}
+
+/* Contenedor interno para la animación de volteo */
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d; /* Permite la rotación 3D */
+  border-radius: 10px;
+}
+
+/* Cuando la tarjeta está volteada */
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+/* Caras frontal y trasera de la tarjeta */
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Oculta la parte trasera cuando no está visible */
+  backface-visibility: hidden;
+  border-radius: 10px;
+  display: flex; /* Para centrar contenido verticalmente */
+  align-items: center; /* Centra verticalmente */
+  justify-content: center; /* Centra horizontalmente */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.flashcard-front {
+  background-color: #007bff; /* Color de fondo frontal */
+  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.flashcard-back {
+  background-color: #f8f9fa; /* Color de fondo trasero */
+  color: #333;
+  transform: rotateY(180deg); /* La cara trasera está inicialmente rotada */
+  font-size: 1.1em;
+  line-height: 1.4;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+/* Estilo para tarjetas emparejadas */
+.flashcard.matched {
+  opacity: 0.6; /* Un poco transparente */
+  pointer-events: none; /* No se puede hacer clic una vez emparejada */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra más suave */
+}
+
+/* Estilos para botones de control del juego */
+.game-controls {
+  text-align: center;
+  margin-top: 30px;
+  padding: 10px;
+}
+
+.game-controls button {
+  padding: 12px 25px;
+  font-size: 1.1em;
+  background-color: #28a745; /* Color para el botón de nuevo juego */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.game-controls button:hover {
+  background-color: #218838;
+}
+
+.game-controls button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+
 /* Media Query para el diseño responsivo de la página de detalle */
 @media (max-width: 768px) {
   .lecciones-container {
@@ -255,6 +363,41 @@ a {
     width: 100%; /* <-- Ocupa todo el ancho en móviles */
   }
 }
+
+/* Estilos para la sección de actividades */
+.activities-section {
+  margin-top: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  overflow: hidden; /* To contain floating or margined elements */
+}
+
+.activities-toggle {
+  background-color: #007bff;
+  color: white;
+  padding: 15px 20px;
+  cursor: pointer;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-bottom: 1px solid #0056b3; /* A darker border */
+  transition: background-color 0.3s ease;
+}
+
+.activities-toggle:hover {
+  background-color: #0056b3;
+}
+
+.activities-content {
+  padding: 20px;
+  background-color: #ffffff;
+}
+
 
 /* Media Query para el diseño responsivo de la página de detalle */
 @media (max-width: 768px) {
