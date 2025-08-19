@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom'; // <-- ¡Necesitamos Link para el botón de redirección!
-// Ya no necesitamos importar Flashcard aquí, el juego se manejará en su propio componente.
-// import Flashcard from './Flashcard'; 
+import { Link } from 'react-router-dom'; // <-- ¡Asegúrate de que Link esté importado!
 import './App.css'; // Make sure styles are applied
 
 function CourseDetail() {
@@ -10,8 +8,6 @@ function CourseDetail() {
   const [curso, setCurso] = useState(null);
   const [leccionActual, setLeccionActual] = useState(null);
   const [showActivities, setShowActivities] = useState(false); // State to show/hide activities
-
-  // Eliminamos todos los estados del juego de flashcards de aquí
 
   useEffect(() => {
     // Fetch course and lessons
@@ -26,12 +22,13 @@ function CourseDetail() {
       .catch(error => console.error("Error fetching course:", error));
   }, [id]);
 
-  // Cuando la lección actual cambia, puedes decidir si quieres que la sección de actividades se colapse.
+  // When the current lesson changes, you might want to collapse the activities section.
   useEffect(() => {
     if (leccionActual) {
-      setShowActivities(false); // Colapsa la sección de actividades al cambiar de lección
+      setShowActivities(false); // Collapse activities section when changing lessons
     }
   }, [leccionActual]);
+
 
   const handleLeccionClick = (leccion) => {
     setLeccionActual(leccion);
@@ -98,12 +95,16 @@ function CourseDetail() {
                     <Link to="/juego-memorizar">
                         <button className="activity-button">Ir al Juego de Memorizar</button>
                     </Link>
-                    <p>Aquí se incluirán otras actividades interactivas específicas de esta lección en el futuro.</p>
+                    <p>Aquí se incluirán otras actividades interactivas para esta lección en el futuro.</p>
                   </div>
                 )}
               </div>
 
               <div className="leccion-buttons">
+                {/* Botón para regresar a la página principal de cursos */}
+                <Link to="/">
+                    <button className="tertiary-button">Volver a Cursos</button>
+                </Link>
                 <button
                   onClick={handlePrevLeccion}
                   disabled={leccionActual.id === curso.lecciones[0].id}

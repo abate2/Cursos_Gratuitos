@@ -1,68 +1,65 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom'; // <-- ¡Importa Link!
 import Flashcard from './Flashcard';
 import './App.css'; // Asegúrate de que los estilos se apliquen
 
 function MemoryGame() {
-  // allRawFlashcards: Guarda los datos brutos de las flashcards que vienen de la API.
   const [allRawFlashcards, setAllRawFlashcards] = useState([]); 
-  // displayFlashcards: Son las tarjetas que realmente se muestran en el juego (pares de palabra/significado).
   const [displayFlashcards, setDisplayFlashcards] = useState([]); 
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // fetchRawFlashcards: Función para obtener las flashcards del backend.
-  // Usamos useCallback para que esta función no cambie en cada render y se pueda usar en useEffect.
   const fetchRawFlashcards = useCallback(() => {
     setLoading(true);
-    fetch(`http://127.0.0.1:8000/api/flashcards/`) // Obtiene TODAS las flashcards
+    fetch(`http://127.0.0.1:8000/api/flashcards/`) 
       .then(response => response.json())
       .then(data => {
-        setAllRawFlashcards(data); // Almacena los datos brutos
+        setAllRawFlashcards(data); 
         setLoading(false);
       })
       .catch(error => {
         console.error("Error fetching all flashcards:", error);
         setLoading(false);
       });
-  }, []); // El array de dependencias vacío significa que esta función solo se crea una vez.
+  }, []); 
 
-  // useEffect para cargar las flashcards brutos cuando el componente se monta.
   useEffect(() => {
     fetchRawFlashcards();
-  }, [fetchRawFlashcards]); // Se ejecuta cuando fetchRawFlashcards cambia (en este caso, solo una vez).
+  }, [fetchRawFlashcards]); 
 
-  // prepareAndShuffleCards: Prepara los pares de tarjetas y las baraja para el juego.
   const prepareAndShuffleCards = useCallback((rawCards) => {
-    // Si no hay suficientes flashcards (mínimo 1 para crear un par), advertir y no continuar.
     if (rawCards.length < 1) { 
-        console.warn("No hay suficientes flashcards para jugar. Necesitas al menos 1.");
+        console.warn("No hay flashcards para jugar en este momento. Por favor, añade al menos una en el panel de administración.");
         setDisplayFlashcards([]);
         return;
     }
-    // Crea los pares de tarjetas (una para la palabra y otra para el significado)
-    const initialCards = rawCards.flatMap(card => [
+
+    const shuffledRawCards = shuffleArray(rawCards);
+    const cardsToUseForGame = shuffledRawCards.slice(0, 6); 
+
+    if (cardsToUseForGame.length < 1) { 
+        console.warn("No hay flashcards suficientes para el juego después de la selección. Necesitas al menos 1.");
+        setDisplayFlashcards([]);
+        return;
+    }
+
+    const initialCards = cardsToUseForGame.flatMap(card => [
       { id: card.id + '-word', type: 'word', content: card.palabra, pairId: card.id },
       { id: card.id + '-meaning', type: 'meaning', content: card.significado, pairId: card.id }
     ]);
-    // Baraja las tarjetas y las establece en el estado para mostrarlas.
+    
     setDisplayFlashcards(shuffleArray(initialCards));
-    setFlippedCards([]); // Reinicia las tarjetas volteadas
-    setMatchedCards([]); // Reinicia las tarjetas emparejadas
-  }, []); // El array de dependencias vacío significa que esta función solo se crea una vez.
+    setFlippedCards([]); 
+    setMatchedCards([]); 
+  }, []); 
 
-
-  // useEffect para preparar y barajar las tarjetas una vez que los datos brutos están disponibles
-  // o cuando se quiere reiniciar el juego (cambia gameStarted)
   useEffect(() => {
-    // Solo prepara las tarjetas si ya tenemos los datos brutos y si el juego aún no ha empezado
-    // (o si se está reiniciando y necesitamos nuevas tarjetas)
     if (allRawFlashcards.length > 0 && !gameStarted) { 
       prepareAndShuffleCards(allRawFlashcards);
     }
   }, [allRawFlashcards, gameStarted, prepareAndShuffleCards]); 
-
 
   const shuffleArray = (array) => {
     const shuffled = [...array]; 
@@ -95,13 +92,18 @@ function MemoryGame() {
     }
   };
 
-  // startGame: Función para iniciar el juego cuando el usuario hace clic en el botón.
   const startGame = () => {
-    setGameStarted(true); // Pone el estado del juego a 'iniciado'
-    prepareAndShuffleCards(allRawFlashcards); // Prepara y baraja las tarjetas para el juego
+    setGameStarted(true); 
+    prepareAndShuffleCards(allRawFlashcards); 
   };
 
-  // allCardsMatched: Comprueba si todas las tarjetas han sido emparejadas.
+  const refreshVocabulary = () => {
+    setGameStarted(false); 
+    setFlippedCards([]);
+    setMatchedCards([]);
+    fetchRawFlashcards(); 
+  };
+
   const allCardsMatched = displayFlashcards.length > 0 && matchedCards.length === displayFlashcards.length;
 
   if (loading) {
@@ -116,6 +118,10 @@ function MemoryGame() {
           {!gameStarted && (
             <div className="game-controls">
               <button onClick={startGame}>Iniciar Juego</button>
+              <button onClick={refreshVocabulary} className="secondary-button">Actualizar Vocabulario</button>
+              <Link to="/"> {/* <-- ¡Nuevo botón para regresar a la página principal! */}
+                <button className="tertiary-button">Volver a Cursos</button>
+              </Link>
             </div>
           )}
 
@@ -137,6 +143,10 @@ function MemoryGame() {
             <div className="game-controls">
               <p>¡Felicidades! Has emparejado todas las tarjetas.</p>
               <button onClick={startGame}>Volver a Jugar</button>
+              <button onClick={refreshVocabulary} className="secondary-button">Actualizar Vocabulario</button>
+              <Link to="/"> {/* <-- ¡También aquí para cuando se termina el juego! */}
+                <button className="tertiary-button">Volver a Cursos</button>
+              </Link>
             </div>
           )}
         </>

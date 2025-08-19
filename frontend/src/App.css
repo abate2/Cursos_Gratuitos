@@ -1,339 +1,445 @@
-/* frontend/src/App.css */
-
-/* Estilos generales para el cuerpo de la página */
+/* Estilos Globales y de la Aplicación General */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f2f5;
-  color: #333;
+  font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #f4f7f6;
+  color: #333;
 }
 
-/* Contenedor principal de la aplicación */
 .App {
   text-align: center;
-  padding: 20px;
 }
 
-/* Estilo para el título principal */
-.App h1 {
-  color: #007bff;
-  margin-bottom: 40px;
-}
-
-/* Estilo para el contenedor de la lista de cursos */
-.courses-list {
-  display: flex; /* <-- Organiza las tarjetas en una fila */
-  flex-wrap: wrap; /* <-- Permite que las tarjetas salten a la siguiente fila si no caben */
-  justify-content: center; /* <-- Centra las tarjetas horizontalmente */
-  gap: 20px; /* <-- Añade espacio entre las tarjetas */
-}
-
-/* Estilo para las tarjetas de cursos individuales */
-.course-card {
-  background-color: #fff;
-  border-radius: 8px; /* <-- Bordes redondeados */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* <-- Sombra para dar efecto de profundidad */
-  padding: 20px;
-  max-width: 300px;
-  text-align: left;
-  transition: transform 0.2s; /* <-- Transición suave al pasar el ratón */
-}
-
-/* Efecto al pasar el ratón por encima de la tarjeta */
-.course-card:hover {
-  transform: translateY(-5px); /* <-- Se mueve ligeramente hacia arriba */
-}
-
-/* Estilo para los títulos de las tarjetas */
-.course-card h2 {
-  color: #333;
-  margin-top: 0;
-}
-
-/* Estilos para los enlaces */
-a {
-  text-decoration: none; /* <-- Quita el subrayado del enlace */
-  color: inherit; /* <-- Hereda el color del texto de la tarjeta */
-}
-/* Estilos para la página de detalle del curso */
-.course-detail {
-  max-width: 800px;
-  margin: 40px auto; /* <-- Centra el contenedor en la página */
-  padding: 30px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  text-align: left;
-}
-
-/* Estilo para los títulos de la página de detalle */
-.course-detail h1 {
-  color: #0056b3;
-  margin-bottom: 20px;
-}
-
-.course-detail h2 {
-  color: #555;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
-  margin-top: 30px;
-}
-
-/* Estilos para la lista de lecciones */
-.course-detail ul {
-  list-style-type: none; /* <-- Quita las viñetas predeterminadas de la lista */
-  padding: 0;
-  margin-top: 10px;
-}
-
-/* Estilos para cada elemento de la lista de lecciones */
-.course-detail li {
-  padding: 15px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  transition: background-color 0.2s;
-}
-
-/* Efecto al pasar el ratón por encima de una lección */
-.course-detail li:hover {
-  background-color: #e9e9e9;
-  cursor: pointer; /* <-- Cambia el cursor para indicar que es clickeable */
-}
-
-/* Estilos para el contenedor de la lección */
-.lecciones-container {
-  display: flex; /* <-- Organiza los dos paneles uno al lado del otro */
-  gap: 20px;
-}
-
-/* Estilos para el panel de la lista de lecciones */
-.lecciones-list {
-  flex: 1; /* <-- Ocupa 1 parte del espacio disponible */
-}
-
-/* Estilos para el panel del contenido de la lección */
-.leccion-content {
-  flex: 2; /* <-- Ocupa 2 partes del espacio disponible (más grande) */
-  background-color: #f5f5f5;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-/* Estilo para la lección actualmente seleccionada */
-.lecciones-list .active {
-  background-color: #007bff !important; /* <-- Color de fondo para la lección activa */
-  color: #fff; /* <-- Color de texto blanco */
-  font-weight: bold;
-}
-
-/* Estilos para los botones de navegación */
-.leccion-buttons {
+/* --- Estilos de Navegación (si tuvieras una) --- */
+.navbar {
+  background-color: #282c34;
+  padding: 15px 20px;
   display: flex;
-  justify-content: space-between; /* <-- Coloca los botones en los extremos */
-  margin-top: 20px;
+  justify-content: flex-start;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.leccion-buttons button {
-  padding: 10px 15px;
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1em;
+  margin-right: 20px;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #61dafb;
+}
+
+/* --- Estilos para la Lista de Cursos (CourseList) --- */
+.course-list-container {
+  padding: 40px 60px; /* Aumentado el padding horizontal para más espacio */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.course-list-container h1 {
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 2.5em;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  justify-content: center;
+}
+
+.course-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.course-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+.course-card-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card h2 {
+  font-size: 1.6em;
+  color: #34495e;
+  margin-top: 0;
+  margin-bottom: 10px;
+  min-height: 2.2em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-card p {
+  font-size: 0.95em;
+  color: #7f8c8d;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-card a {
+  display: inline-block;
   background-color: #007bff;
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
 }
 
-.leccion-buttons button:hover:not([disabled]) {
+.course-card a:hover {
   background-color: #0056b3;
 }
 
-/* Estilo para los botones deshabilitados */
-.leccion-buttons button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+
+/* --- Estilos para Detalle del Curso y Lección (CourseDetail) --- */
+.course-detail {
+  padding: 30px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
-/* Estilos para el contenedor de la lección */
+.course-detail h1 {
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 2.8em;
+  text-align: center;
+}
+
 .lecciones-container {
-  display: flex; /* <-- Habilita el flexbox para una distribución flexible */
-  gap: 20px;
-  align-items: flex-start; /* <-- Alinea el contenido al inicio */
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
 }
 
-/* Estilos para el panel del menú de lecciones */
 .lecciones-list {
-  flex-shrink: 0; /* <-- Evita que se encoja */
-  width: 250px; /* <-- Ancho fijo para el menú lateral */
-  background-color: #fff;
+  flex: 0 0 250px;
+  background-color: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.lecciones-list h2 {
+  font-size: 1.5em;
+  color: #34495e;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
 }
 
 .lecciones-list ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .lecciones-list li {
-  padding: 10px 15px;
-  border-radius: 5px;
-  margin-bottom: 5px;
+  background-color: #e9ecef;
+  margin-bottom: 8px;
+  padding: 12px 15px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.lecciones-list li:hover {
-  background-color: #e0e0e0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-align: left;
+  font-weight: 500;
+  color: #555;
 }
 
 .lecciones-list li.active {
-  background-color: #007bff; /* <-- Color de fondo para la lección activa */
-  color: #fff; /* <-- Color de texto blanco */
+  background-color: #007bff;
+  color: white;
   font-weight: bold;
 }
 
-/* Estilos para el panel del contenido de la lección */
 .leccion-content {
-  flex-grow: 1; /* <-- Ocupa todo el espacio restante */
-  background-color: #fff;
-  padding: 20px;
+  flex-grow: 1;
+  background-color: #ffffff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.leccion-content h3 {
+  font-size: 2em;
+  color: #34495e;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.leccion-content p {
+  font-size: 1.1em;
+  line-height: 1.7;
+  color: #555;
+}
+
+/* Estilos para el contenido CKEditor (tablas, imágenes, etc.) */
+.leccion-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.leccion-content th,
+.leccion-content td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.leccion-content th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #333;
+}
+
+.leccion-content tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.leccion-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px 0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilos para los botones de navegación */
+/* Estilos para botones de navegación de lección */
 .leccion-buttons {
-  position: fixed;
-  bottom: 0;
-  left: 50%; /* <-- Centers the element horizontally */
-  transform: translateX(-50%); /* <-- Corrects the centering */
-  width: 100%;
-  max-width: 800px; /* <-- Matches the max-width of .course-detail */
-  
   display: flex;
   justify-content: space-between;
-  
-  padding: 15px 30px;
-  background-color: #f0f2f5;
-  border-top: 1px solid #ddd;
-  z-index: 100;
-  
-  box-sizing: border-box; /* <-- Ensures padding doesn't affect the width */
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
 }
 
-/* El resto de estilos de los botones (que ya teníamos) */
 .leccion-buttons button {
-  padding: 10px 15px;
+  padding: 12px 25px;
+  font-size: 1em;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.leccion-buttons button:hover:not([disabled]) {
+.leccion-buttons button:hover {
   background-color: #0056b3;
 }
 
 .leccion-buttons button:disabled {
-  background-color: #ccc;
+  background-color: #cccccc;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* Estilos generales para el contenedor de las flashcards */
+/* --- Estilos para la sección de actividades (CourseDetail) --- */
+.activities-section {
+  margin-top: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.activities-toggle {
+  background-color: #007bff;
+  color: white;
+  padding: 15px 20px;
+  cursor: pointer;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-bottom: 1px solid #0056b3;
+  transition: background-color 0.3s ease;
+}
+
+.activities-toggle:hover {
+  background-color: #0056b3;
+}
+
+.activities-content {
+  padding: 20px;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.activity-button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.activity-button:hover {
+  background-color: #218838;
+}
+
+/* --- Estilos para el Juego de Memorizar (MemoryGame) --- */
+.memory-game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+}
+
+.memory-game-container h2 {
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 2em;
+  text-align: center;
+}
+
 .flashcards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 200px por tarjeta */
-  gap: 20px;
-  padding: 20px;
-  max-width: 1000px; /* Limita el ancho del juego */
-  margin: 20px auto; /* Centra el juego */
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 15px;
+  padding: 10px;
+  max-width: 900px;
+  width: 100%;
+  margin-top: 20px;
+  justify-content: center;
 }
 
-/* Estilos para cada flashcard individual */
 .flashcard {
   background-color: transparent;
   width: 100%;
-  height: 150px; /* Altura fija para las tarjetas */
-  perspective: 1000px; /* Para la animación 3D de volteo */
+  height: 120px;
+  perspective: 1000px;
   cursor: pointer;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.6s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Contenedor interno para la animación de volteo */
 .flashcard-inner {
   position: relative;
   width: 100%;
   height: 100%;
   text-align: center;
   transition: transform 0.6s;
-  transform-style: preserve-3d; /* Permite la rotación 3D */
+  transform-style: preserve-3d;
   border-radius: 10px;
 }
 
-/* Cuando la tarjeta está volteada */
 .flashcard.flipped .flashcard-inner {
   transform: rotateY(180deg);
 }
 
-/* Caras frontal y trasera de la tarjeta */
 .flashcard-front,
 .flashcard-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden; /* Oculta la parte trasera cuando no está visible */
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: 10px;
-  display: flex; /* Para centrar contenido verticalmente */
-  align-items: center; /* Centra verticalmente */
-  justify-content: center; /* Centra horizontalmente */
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
   box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .flashcard-front {
-  background-color: #007bff; /* Color de fondo frontal */
+  background-color: #007bff;
   color: white;
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: bold;
 }
 
 .flashcard-back {
-  background-color: #f8f9fa; /* Color de fondo trasero */
+  background-color: #FFC0CB;
   color: #333;
-  transform: rotateY(180deg); /* La cara trasera está inicialmente rotada */
-  font-size: 1.1em;
-  line-height: 1.4;
+  transform: rotateY(180deg);
+  font-size: 0.9em;
+  line-height: 1.3;
   text-align: center;
-  border: 1px solid #ddd;
+  border: 1px solid #FF99AA;
 }
 
-/* Estilo para tarjetas emparejadas */
 .flashcard.matched {
-  opacity: 0.6; /* Un poco transparente */
-  pointer-events: none; /* No se puede hacer clic una vez emparejada */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra más suave */
+  opacity: 0.6;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Estilos para botones de control del juego */
 .game-controls {
   text-align: center;
   margin-top: 30px;
   padding: 10px;
+  width: 100%;
 }
 
 .game-controls button {
   padding: 12px 25px;
   font-size: 1.1em;
-  background-color: #28a745; /* Color para el botón de nuevo juego */
+  background-color: #28a745;
   color: white;
   border: none;
   border-radius: 8px;
@@ -352,63 +458,174 @@ a {
   cursor: not-allowed;
 }
 
+.secondary-button {
+  background-color: #6c757d;
+  margin-left: 10px;
+}
 
-/* Media Query para el diseño responsivo de la página de detalle */
-@media (max-width: 768px) {
+.secondary-button:hover {
+  background-color: #5a6268;
+}
+
+/* Nuevo estilo para el botón de retornar a la página principal */
+.tertiary-button {
+  background-color: #17a2b8; /* Un color azul-cian para el botón de retorno */
+  margin-left: 10px;
+  padding: 12px 25px; /* Mismo padding que otros botones para consistencia */
+  font-size: 1.1em; /* Mismo tamaño de fuente */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tertiary-button:hover {
+  background-color: #138496;
+}
+
+/* --- MEDIA QUERIES PARA RESPONSIVIDAD --- */
+
+/* Para tabletas y móviles (ancho máximo de 768px) */
+@media screen and (max-width: 768px) {
+  /* Globales */
+  body {
+    font-size: 15px;
+  }
+
+  .course-list-container,
+  .course-detail,
+  .memory-game-container {
+    padding: 15px; /* Reduce el padding general */
+  }
+
+  /* Curso y Lecciones */
+  .course-list-container h1,
+  .course-detail h1 {
+    font-size: 2em;
+  }
+
+  .course-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .course-card h2 {
+    font-size: 1.4em;
+  }
+
+  .course-card p {
+    font-size: 0.9em;
+  }
+
   .lecciones-container {
-    flex-direction: column; /* <-- Apila los paneles en pantallas pequeñas */
+    flex-direction: column;
+    gap: 20px;
   }
 
   .lecciones-list {
-    width: 100%; /* <-- Ocupa todo el ancho en móviles */
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .leccion-content h3 {
+    font-size: 1.8em;
+  }
+
+  .leccion-content p {
+    font-size: 1em;
+  }
+
+  .leccion-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .leccion-buttons button {
+    width: 100%;
+  }
+
+  /* Juego de Memorizar */
+  .memory-game-container h2 {
+    font-size: 1.8em;
+  }
+  
+  .flashcards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 600px;
+  }
+
+  .flashcard {
+    height: 100px;
+  }
+
+  .flashcard-front,
+  .flashcard-back {
+    font-size: 1em;
+    padding: 6px;
+  }
+
+  .game-controls button {
+    font-size: 1em;
+    padding: 10px 20px;
+    margin: 5px;
   }
 }
 
-/* Estilos para la sección de actividades */
-.activities-section {
-  margin-top: 30px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  overflow: hidden; /* To contain floating or margined elements */
-}
-
-.activities-toggle {
-  background-color: #007bff;
-  color: white;
-  padding: 15px 20px;
-  cursor: pointer;
-  margin: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.2em;
-  font-weight: bold;
-  border-bottom: 1px solid #0056b3; /* A darker border */
-  transition: background-color 0.3s ease;
-}
-
-.activities-toggle:hover {
-  background-color: #0056b3;
-}
-
-.activities-content {
-  padding: 20px;
-  background-color: #ffffff;
-}
-
-
-/* Media Query para el diseño responsivo de la página de detalle */
-@media (max-width: 768px) {
-  .lecciones-container {
-    flex-direction: column; /* <-- Apila los paneles en pantallas pequeñas */
+/* Para móviles pequeños (ancho máximo de 480px) */
+@media screen and (max-width: 480px) {
+  /* Globales */
+  body {
+    font-size: 14px;
   }
-}
-/* Media Queries para la página de detalle en pantallas pequeñas */
-@media (max-width: 768px) {
-  .course-detail {
-    margin: 20px 10px;
+
+  .course-list-container h1,
+  .course-detail h1,
+  .memory-game-container h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  /* Curso y Lecciones */
+  .course-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .course-card-content {
     padding: 15px;
+  }
+
+  .course-card h2 {
+    font-size: 1.2em;
+    min-height: unset;
+  }
+
+  .course-card p {
+    font-size: 0.85em;
+  }
+
+  /* Juego de Memorizar */
+  .flashcards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 5px;
+  }
+
+  .flashcard {
+    height: 90px;
+  }
+
+  .flashcard-front,
+  .flashcard-back {
+    font-size: 0.8em;
+    padding: 4px;
+  }
+
+  .game-controls button {
+    font-size: 0.9em;
+    padding: 8px 15px;
+    margin: 3px;
   }
 }
