@@ -35,7 +35,7 @@ body {
 
 /* --- Estilos para la Lista de Cursos (CourseList) --- */
 .course-list-container {
-  padding: 40px 40px; 
+  padding: 40px 40px; /* Aumentado el padding horizontal para más espacio */
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -148,15 +148,10 @@ body {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
-  align-items: flex-start; /* Alinea los elementos al inicio del contenedor flex */
 }
 
 .lecciones-list {
-  /* CAMBIOS CLAVE AQUÍ */
-  flex: 0 0 auto; /* Permite que el elemento tenga su tamaño de contenido, pero se encoja/crezca según las necesidades del flexbox */
-  max-width: 250px; /* Ancho máximo para la lista de lecciones */
-  min-width: 150px; /* Ancho mínimo para la lista de lecciones, para asegurar legibilidad */
-  width: 100%; /* Ocupa el 100% de su espacio disponible, hasta max-width */
+  flex: 0 0 250px;
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
@@ -197,18 +192,14 @@ body {
 }
 
 .leccion-content {
-  flex-grow: 1; /* Permite que crezca para ocupar el espacio disponible */
-  flex-shrink: 1; /* ¡NUEVO! Permite que se encoja cuando sea necesario */
-  flex-basis: 0; /* ¡NUEVO! Permite que el navegador decida su tamaño base para un mejor envolvimiento */
+  flex-grow: 1;
   background-color: #ffffff;
   padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   text-align: left;
-  min-width: 0; /* Permite que el contenido flex se encoja correctamente */
 }
 
-/* Estilos para el TÍTULO DE LA LECCIÓN (h3) */
 .leccion-content h3 {
   font-size: 2em;
   color: #34495e;
@@ -216,14 +207,6 @@ body {
   margin-bottom: 20px;
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 10px;
-  white-space: normal; /* Permite que el texto se envuelva */
-  overflow: visible; /* Asegura que todo el contenido sea visible */
-  text-overflow: clip; /* Elimina los puntos suspensivos */
-  width: 100%; /* Asegura que ocupe el 100% del ancho del contenedor */
-  box-sizing: border-box; /* Incluye padding y border en el ancho total */
-  display: block; /* Asegura que se comporte como un elemento de bloque */
-  min-width: 0; /* Importante en contextos flex/grid para permitir que el elemento se encoja */
-  line-height: 1.2; /* Controla el espacio entre líneas para el texto envuelto */
 }
 
 .leccion-content p {
@@ -238,6 +221,12 @@ body {
   border-collapse: collapse;
   margin: 20px 0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  /* --- NUEVAS REGLAS PARA CENTRAR LA TABLA --- */
+  display: block; /* Necesario para que margin: auto funcione */
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%; /* Asegura que la tabla no desborde en pantallas pequeñas */
+  /* ------------------------------------------- */
 }
 
 .leccion-content th,
@@ -691,15 +680,6 @@ body {
     flex: 0 0 auto; /* Permite que la lista de lecciones tome el ancho completo */
     width: 100%;
   }
-
-  .leccion-content {
-    flex-grow: 1; /* Ocupa el espacio restante */
-    flex-shrink: 1; /* Permite que se encoja */
-    flex-basis: auto; /* Se ajusta al tamaño del contenido */
-    /* Aquí se puede añadir un ancho mínimo si es necesario para evitar colapsos extremos */
-    min-width: 0; /* Asegura que el contenido pueda encogerse si es necesario */
-  }
-
 
   .leccion-content h3 {
     font-size: 1.8em;

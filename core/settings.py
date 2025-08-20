@@ -1,23 +1,28 @@
-# mi-plataforma-cursos/core/settings.py
-
 import os
 from pathlib import Path
+import dj_database_url # Importa dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m#+5x=w3z8y9e@&h-m7#b7q-@p+n5n#k4p_z+0y!*q_w_f-d9#' # ¡CAMBIA ESTO EN PRODUCCIÓN!
+# IMPORTANTE: MANTÉN ESTO SECRETO EN PRODUCCIÓN.
+# Usar una variable de entorno para SECRET_KEY
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-tu_clave_secreta_local_muy_larga_y_aleatoria')
+# ¡CAMBIA 'tu_clave_secreta_local_muy_larga_y_aleatoria' por una clave larga y segura para desarrollo!
+# En Render, estableceremos SECRET_KEY como una variable de entorno.
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG será False en producción.
+DEBUG = os.environ.get('DEBUG_VALUE', 'True') == 'True'
 
-ALLOWED_HOSTS = []
 
+# Permite el host de Render. Tu URL de Render será algo como "tu-app-name.onrender.com"
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+if DEBUG:
+    ALLOWED_HOSTS += ['127.0.0.1', 'localhost'] # Para desarrollo local
 
 # Application definition
 
@@ -28,18 +33,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
-    'ckeditor', # ¡Importante para el editor!
-    'ckeditor_uploader', # ¡Importante para subir imágenes en el editor!
-    'cursos', # Tu aplicación 'cursos'
-    # ... otras aplicaciones si las tienes
+    'rest_framework', # Para las APIs REST
+    'corsheaders', # Para CORS
+    'cursos', # Tu aplicación de cursos
+    'ckeditor', # Para CKEditor
+    'ckeditor_uploader', # Para subir imágenes en CKEditor
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Añadir WhiteNoise para servir estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # Middleware de CORS
+    'corsheaders.middleware.CorsMiddleware', # Añadir CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -47,12 +52,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls' # ¡Asegúrate de que apunte a 'core.urls'!
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'], # Si tienes plantillas HTML de Django
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,18 +70,25 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application' # ¡Asegúrate de que apunte a 'core.wsgi'!
+WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# Configuración de la base de datos para producción (Render)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# La variable de entorno DATABASE_URL será establecida por Render.
+# Si existe, la usamos; de lo contrario, usamos SQLite local.
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES['default'] = dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
 
 
 # Password validation
@@ -101,50 +113,50 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'es-es' # Cambiado a español
-TIME_ZONE = 'America/Bogota' # Zona horaria de Bogotá (o la que prefieras)
-USE_I18N = True
+LANGUAGE_CODE = 'es-es' # Puedes cambiarlo a 'es-es' si lo deseas
+
+TIME_ZONE = 'America/Bogota' # O tu zona horaria preferida
+
+USE_I17N = True
+
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-# Configuración de archivos estáticos (CSS, JavaScript, imágenes que forman parte de tu aplicación)
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Directorio donde se recolectan los archivos estáticos en producción
+# Configuración de archivos estáticos para desarrollo y producción
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Directorio donde collectstatic recolectará los archivos
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    # Ruta a los archivos estáticos de tu frontend React compilado
+    BASE_DIR / 'frontend' / 'build' / 'static',
+]
 
-# Configuración de archivos de medios (imágenes, videos subidos por los usuarios a través de CKEditor)
-# Usado para servir archivos subidos
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media' # Directorio donde se guardarán los archivos subidos (ej. imágenes de CKEditor)
+# Configuración de WhiteNoise para servir archivos estáticos comprimidos y con caché
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
+
+# CKEditor Settings
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+CKEDITOR_UPLOAD_PATH = "uploads/" # Directorio donde se subirán las imágenes
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuración de CKEditor
-CKEDITOR_UPLOAD_PATH = 'uploads/' # Los archivos subidos desde CKEditor se guardarán en media/uploads/
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full', # Esto habilita la barra de herramientas completa
-        'height': 300,
-        'width': '100%',
-        'extraPlugins': 'codesnippet', # Si necesitas resaltar código (opcional, CKEditor 4 requiere plugin)
-        'filebrowserUploadUrl': '/ckeditor/upload/', # URL a la que CKEditor subirá archivos
-        'filebrowserBrowseUrl': '/ckeditor/browse/', # URL para navegar archivos en el servidor
-        'removePlugins': 'elementspath', # Eliminar la barra de ruta de elementos en la parte inferior del editor
-        'resize_enabled': False, # Desactivar redimensionamiento manual del editor
-    },
-}
-
-# Configuración de CORS (si estás haciendo peticiones desde React a Django)
-CORS_ALLOW_ALL_ORIGINS = True # Esto es solo para desarrollo. Para producción, sé más específico.
-# Opcionalmente, para más seguridad en producción:
+# CORS Settings
+CORS_ALLOW_ALL_ORIGINS = True # Esto es para desarrollo. En producción, deberías ser más restrictivo.
 # CORS_ALLOWED_ORIGINS = [
-#    "http://localhost:3000", # Tu frontend de React en desarrollo
-#    "http://127.0.0.1:3000",
+#     "https://tu-frontend-render-url.onrender.com", # Si tu frontend React está en un servicio separado de Render
 # ]
 
