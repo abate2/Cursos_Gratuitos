@@ -1,4 +1,4 @@
-# render.yaml en la raíz de tu repositorio (VERSIÓN CORREGIDA)
+# render.yaml para el despliegue en Render
 services:
   - type: web # Servicio para tu backend Django
     name: mi-plataforma-backend # Nombre de tu servicio backend (cámbialo si quieres)
@@ -31,8 +31,3 @@ services:
         value: "False"
       - key: ALLOWED_HOSTS
         value: "${RENDER_EXTERNAL_HOSTNAME}" # Render llenará esto con el dominio público de tu app
-
-# NOTA: La sección 'type: postgres' ha sido eliminada de este archivo
-# porque ya creaste la base de datos manualmente en el panel de Render.
-# La conexión se establece a través de 'fromDatabase: mi-plataforma-cursos-db'
-# en las envVars del servicio web.
