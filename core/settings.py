@@ -10,19 +10,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # IMPORTANTE: MANTÉN ESTO SECRETO EN PRODUCCIÓN.
 # Usar una variable de entorno para SECRET_KEY
+# En Railway, estableceremos SECRET_KEY como una variable de entorno.
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-tu_clave_secreta_local_muy_larga_y_aleatoria')
-# ¡CAMBIA 'tu_clave_secreta_local_muy_larga_y_aleatoria' por una clave larga y segura para desarrollo!
-# En Render, estableceremos SECRET_KEY como una variable de entorno.
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG será False en producción.
 DEBUG = os.environ.get('DEBUG_VALUE', 'True') == 'True'
 
 
-# Permite el host de Render. Tu URL de Render será algo como "tu-app-name.onrender.com"
+# Permite el host de Render. Tu URL de Railway será algo como "tu-app-name.up.railway.app"
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 if DEBUG:
     ALLOWED_HOSTS += ['127.0.0.1', 'localhost'] # Para desarrollo local
+
 
 # Application definition
 
@@ -76,7 +77,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Configuración de la base de datos para producción (Render)
+# Configuración de la base de datos para producción (Railway)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -84,7 +85,7 @@ DATABASES = {
     }
 }
 
-# La variable de entorno DATABASE_URL será establecida por Render.
+# La variable de entorno DATABASE_URL será establecida por Railway.
 # Si existe, la usamos; de lo contrario, usamos SQLite local.
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
@@ -157,6 +158,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True # Esto es para desarrollo. En producción, deberías ser más restrictivo.
 # CORS_ALLOWED_ORIGINS = [
-#     "https://tu-frontend-render-url.onrender.com", # Si tu frontend React está en un servicio separado de Render
+#     "https://tu-frontend-railway-url.up.railway.app", # Si tu frontend React está en un servicio separado de Railway
 # ]
-
