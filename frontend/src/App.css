@@ -148,11 +148,15 @@ body {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
-  align-items: flex-start; /* ¡NUEVO! Alinea los elementos al inicio del contenedor flex */
+  align-items: flex-start; /* Alinea los elementos al inicio del contenedor flex */
 }
 
 .lecciones-list {
-  flex: 0 0 250px;
+  /* CAMBIOS CLAVE AQUÍ */
+  flex: 0 0 auto; /* Permite que el elemento tenga su tamaño de contenido, pero se encoja/crezca según las necesidades del flexbox */
+  max-width: 250px; /* Ancho máximo para la lista de lecciones */
+  min-width: 150px; /* Ancho mínimo para la lista de lecciones, para asegurar legibilidad */
+  width: 100%; /* Ocupa el 100% de su espacio disponible, hasta max-width */
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
@@ -193,12 +197,15 @@ body {
 }
 
 .leccion-content {
-  flex-grow: 1;
+  flex-grow: 1; /* Permite que crezca para ocupar el espacio disponible */
+  flex-shrink: 1; /* ¡NUEVO! Permite que se encoja cuando sea necesario */
+  flex-basis: 0; /* ¡NUEVO! Permite que el navegador decida su tamaño base para un mejor envolvimiento */
   background-color: #ffffff;
   padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   text-align: left;
+  min-width: 0; /* Permite que el contenido flex se encoja correctamente */
 }
 
 /* Estilos para el TÍTULO DE LA LECCIÓN (h3) */
@@ -216,7 +223,7 @@ body {
   box-sizing: border-box; /* Incluye padding y border en el ancho total */
   display: block; /* Asegura que se comporte como un elemento de bloque */
   min-width: 0; /* Importante en contextos flex/grid para permitir que el elemento se encoja */
-  line-height: 1.2; /* ¡NUEVO! Controla el espacio entre líneas para el texto envuelto */
+  line-height: 1.2; /* Controla el espacio entre líneas para el texto envuelto */
 }
 
 .leccion-content p {
@@ -653,7 +660,7 @@ body {
   .course-list-container,
   .course-detail,
   .memory-game-container {
-    padding: 15px; 
+    padding: 15px; /* Reduce el padding general */
   }
 
   /* Curso y Lecciones */
@@ -663,7 +670,7 @@ body {
   }
 
   .course-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* 2 columnas en tablets */
     gap: 20px;
   }
 
@@ -676,17 +683,26 @@ body {
   }
 
   .lecciones-container {
-    flex-direction: column; 
+    flex-direction: column; /* Apila las columnas verticalmente */
     gap: 20px;
   }
 
   .lecciones-list {
-    flex: 0 0 auto; 
+    flex: 0 0 auto; /* Permite que la lista de lecciones tome el ancho completo */
     width: 100%;
   }
 
+  .leccion-content {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    flex-shrink: 1; /* Permite que se encoja */
+    flex-basis: auto; /* Se ajusta al tamaño del contenido */
+    /* Aquí se puede añadir un ancho mínimo si es necesario para evitar colapsos extremos */
+    min-width: 0; /* Asegura que el contenido pueda encogerse si es necesario */
+  }
+
+
   .leccion-content h3 {
-    font-size: 1.6em; /* Ajustado para pantallas de tablet */
+    font-size: 1.8em;
   }
 
   .leccion-content p {
@@ -694,12 +710,12 @@ body {
   }
 
   .leccion-buttons {
-    flex-direction: column; 
+    flex-direction: column; /* Apila los botones de navegación */
     gap: 15px;
   }
 
   .leccion-buttons button {
-    width: 100%; 
+    width: 100%; /* Botones de navegación ocupan el ancho completo */
   }
 
   /* Juego de Memorizar */
@@ -708,13 +724,13 @@ body {
   }
   
   .flashcards-grid {
-    grid-template-columns: repeat(3, 1fr); 
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en tabletas */
     gap: 10px;
-    max-width: 600px; 
+    max-width: 600px; /* Ajusta el ancho máximo para la cuadrícula */
   }
 
   .flashcard {
-    height: 100px; 
+    height: 100px; /* Altura de tarjeta más pequeña */
   }
 
   .flashcard-front,
@@ -726,14 +742,14 @@ body {
   .game-controls button {
     font-size: 1em;
     padding: 10px 20px;
-    margin: 5px; 
+    margin: 5px; /* Reduce el margen entre botones */
   }
 
   /* Mini-Cuestionario Responsive */
   .quiz-start-button,
   .quiz-navigation-button,
   .quiz-retake-button {
-    max-width: 250px; 
+    max-width: 250px; /* Ancho máximo para botones de quiz */
   }
 
   .quiz-option-button {
@@ -758,7 +774,7 @@ body {
 
   /* Curso y Lecciones */
   .course-grid {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr; /* Una sola columna en móviles pequeños */
   }
 
   .course-card-content {
@@ -776,7 +792,7 @@ body {
 
   /* Juego de Memorizar */
   .flashcards-grid {
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles pequeños */
     gap: 8px;
     padding: 5px;
   }
