@@ -35,7 +35,7 @@ body {
 
 /* --- Estilos para la Lista de Cursos (CourseList) --- */
 .course-list-container {
-  padding: 40px 60px; /* Aumentado el padding horizontal para más espacio */
+  padding: 40px 40px; 
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -148,6 +148,7 @@ body {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
+  align-items: flex-start; /* ¡NUEVO! Alinea los elementos al inicio del contenedor flex */
 }
 
 .lecciones-list {
@@ -200,6 +201,7 @@ body {
   text-align: left;
 }
 
+/* Estilos para el TÍTULO DE LA LECCIÓN (h3) */
 .leccion-content h3 {
   font-size: 2em;
   color: #34495e;
@@ -207,6 +209,14 @@ body {
   margin-bottom: 20px;
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 10px;
+  white-space: normal; /* Permite que el texto se envuelva */
+  overflow: visible; /* Asegura que todo el contenido sea visible */
+  text-overflow: clip; /* Elimina los puntos suspensivos */
+  width: 100%; /* Asegura que ocupe el 100% del ancho del contenedor */
+  box-sizing: border-box; /* Incluye padding y border en el ancho total */
+  display: block; /* Asegura que se comporte como un elemento de bloque */
+  min-width: 0; /* Importante en contextos flex/grid para permitir que el elemento se encoja */
+  line-height: 1.2; /* ¡NUEVO! Controla el espacio entre líneas para el texto envuelto */
 }
 
 .leccion-content p {
@@ -485,6 +495,152 @@ body {
   background-color: #138496;
 }
 
+/* --- ESTILOS DEL MINI-CUESTIONARIO --- */
+.mini-quiz-container {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fcfcfc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.quiz-start-button,
+.quiz-navigation-button,
+.quiz-retake-button {
+  padding: 12px 25px;
+  font-size: 1.1em;
+  background-color: #007bff; /* Color primario para quiz */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin: 10px auto; /* Centrar y dar margen */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: block; /* Ocupa todo el ancho si está solo */
+  max-width: 300px; /* Ancho máximo para el botón */
+}
+
+.quiz-start-button:hover,
+.quiz-navigation-button:hover,
+.quiz-retake-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.quiz-start-button:disabled,
+.quiz-navigation-button:disabled,
+.quiz-retake-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.quiz-question-card {
+  background-color: #e9f7ef; /* Fondo verde claro para la pregunta */
+  border: 1px solid #d4edda;
+  border-radius: 10px;
+  padding: 25px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-question-card h4 {
+  font-size: 1.3em;
+  color: #28a745; /* Verde para el título de la pregunta */
+  margin-bottom: 15px;
+}
+
+.question-text {
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espacio entre opciones */
+  margin-bottom: 25px;
+}
+
+.quiz-option-button {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1em;
+  background-color: #f0f8ff; /* Azul claro para opciones */
+  color: #333;
+  border: 1px solid #aaddff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  text-align: left;
+}
+
+.quiz-option-button:hover {
+  background-color: #e0f2ff;
+  transform: translateY(-1px);
+}
+
+.quiz-option-button.selected {
+  background-color: #007bff; /* Azul oscuro cuando seleccionada */
+  color: white;
+  border-color: #007bff;
+  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+}
+
+.quiz-results-card {
+  background-color: #fff3cd; /* Fondo amarillo claro para resultados */
+  border: 1px solid #ffeeba;
+  border-radius: 10px;
+  padding: 25px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-results-card h4 {
+  font-size: 1.5em;
+  color: #856404; /* Marrón oscuro para el título de resultados */
+  margin-bottom: 20px;
+}
+
+.quiz-results-card p {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.review-answers {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  text-align: left;
+}
+
+.answer-review-item {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.answer-review-item.correct {
+  background-color: #d4edda; /* Verde para respuestas correctas */
+  border: 1px solid #28a745;
+}
+
+.answer-review-item.incorrect {
+  background-color: #f8d7da; /* Rojo para respuestas incorrectas */
+  border: 1px solid #dc3545;
+}
+
+.answer-review-item strong {
+  color: #0056b3; /* Un azul para las preguntas revisadas */
+}
+
 /* --- MEDIA QUERIES PARA RESPONSIVIDAD --- */
 
 /* Para tabletas y móviles (ancho máximo de 768px) */
@@ -497,7 +653,7 @@ body {
   .course-list-container,
   .course-detail,
   .memory-game-container {
-    padding: 15px; /* Reduce el padding general */
+    padding: 15px; 
   }
 
   /* Curso y Lecciones */
@@ -507,7 +663,7 @@ body {
   }
 
   .course-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
     gap: 20px;
   }
 
@@ -520,17 +676,17 @@ body {
   }
 
   .lecciones-container {
-    flex-direction: column;
+    flex-direction: column; 
     gap: 20px;
   }
 
   .lecciones-list {
-    flex: 0 0 auto;
+    flex: 0 0 auto; 
     width: 100%;
   }
 
   .leccion-content h3 {
-    font-size: 1.8em;
+    font-size: 1.6em; /* Ajustado para pantallas de tablet */
   }
 
   .leccion-content p {
@@ -538,12 +694,12 @@ body {
   }
 
   .leccion-buttons {
-    flex-direction: column;
+    flex-direction: column; 
     gap: 15px;
   }
 
   .leccion-buttons button {
-    width: 100%;
+    width: 100%; 
   }
 
   /* Juego de Memorizar */
@@ -552,13 +708,13 @@ body {
   }
   
   .flashcards-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); 
     gap: 10px;
-    max-width: 600px;
+    max-width: 600px; 
   }
 
   .flashcard {
-    height: 100px;
+    height: 100px; 
   }
 
   .flashcard-front,
@@ -570,7 +726,19 @@ body {
   .game-controls button {
     font-size: 1em;
     padding: 10px 20px;
-    margin: 5px;
+    margin: 5px; 
+  }
+
+  /* Mini-Cuestionario Responsive */
+  .quiz-start-button,
+  .quiz-navigation-button,
+  .quiz-retake-button {
+    max-width: 250px; 
+  }
+
+  .quiz-option-button {
+    font-size: 0.9em;
+    padding: 10px;
   }
 }
 
@@ -590,7 +758,7 @@ body {
 
   /* Curso y Lecciones */
   .course-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; 
   }
 
   .course-card-content {
@@ -608,7 +776,7 @@ body {
 
   /* Juego de Memorizar */
   .flashcards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); 
     gap: 8px;
     padding: 5px;
   }
@@ -627,5 +795,41 @@ body {
     font-size: 0.9em;
     padding: 8px 15px;
     margin: 3px;
+  }
+
+  /* Mini-Cuestionario Responsive */
+  .quiz-question-card {
+    padding: 15px;
+  }
+
+  .quiz-question-card h4 {
+    font-size: 1.1em;
+  }
+
+  .question-text {
+    font-size: 1em;
+    margin-bottom: 15px;
+  }
+
+  .quiz-options {
+    gap: 8px;
+  }
+
+  .quiz-option-button {
+    font-size: 0.85em;
+    padding: 8px 10px;
+  }
+
+  .quiz-results-card {
+    padding: 15px;
+  }
+
+  .quiz-results-card h4 {
+    font-size: 1.3em;
+  }
+
+  .answer-review-item {
+    font-size: 0.9em;
+    padding: 8px;
   }
 }
