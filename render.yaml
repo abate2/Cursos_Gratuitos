@@ -1,4 +1,4 @@
-# render.yaml en la raíz de tu repositorio
+# render.yaml en la raíz de tu repositorio (VERSIÓN CORREGIDA)
 services:
   - type: web # Servicio para tu backend Django
     name: mi-plataforma-backend # Nombre de tu servicio backend (cámbialo si quieres)
@@ -17,14 +17,12 @@ services:
       python manage.py migrate
     startCommand: gunicorn core.wsgi:application # Comando para iniciar el servidor Django
     # Ruta al archivo wsgi.py de tu proyecto
-    # Si tu estructura es mi-plataforma-cursos/core/wsgi.py, entonces es core.wsgi:application
-    # Si fuera mi-proyecto/mi-proyecto/wsgi.py, sería mi-proyecto.wsgi:application
     healthCheckPath: /admin/login/ # Una ruta para que Render sepa que tu app está viva
     plan: free # Puedes elegir starter o superior si necesitas más recursos
     autoDeploy: true # Despliega automáticamente cada vez que haya un push a la rama conectada
     envVars:
       - key: DATABASE_URL # Variable de entorno para la URL de la base de datos
-        fromDatabase: mi-plataforma-cursos-db # Nombre de la base de datos que creaste en Render
+        fromDatabase: mi-plataforma-cursos-db # Nombre de la base de datos que creaste en Render (¡DEBE COINCIDIR!)
       - key: SECRET_KEY # Variable de entorno para la clave secreta de Django
         generateValue: true # Render generará una clave segura automáticamente
       - key: WEB_CONCURRENCY # Recomendado para Gunicorn
@@ -34,8 +32,7 @@ services:
       - key: ALLOWED_HOSTS
         value: "${RENDER_EXTERNAL_HOSTNAME}" # Render llenará esto con el dominio público de tu app
 
-  - type: postgres # Servicio de base de datos
-    name: mi-plataforma-cursos-db # Nombre de la base de datos (¡DEBE COINCIDIR con fromDatabase arriba!)
-    plan: free # Plan de base de datos (puedes elegir starter o superior)
-    databaseName: micursodb # Nombre de la base de datos interna (el que configuraste al crearla)
-    user: miusuario # Usuario de la base de datos (el que configuraste al crearla)
+# NOTA: La sección 'type: postgres' ha sido eliminada de este archivo
+# porque ya creaste la base de datos manualmente en el panel de Render.
+# La conexión se establece a través de 'fromDatabase: mi-plataforma-cursos-db'
+# en las envVars del servicio web.
