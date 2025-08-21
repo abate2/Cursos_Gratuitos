@@ -16,6 +16,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 # Instala Node.js (que incluye npm) desde el repositorio recién añadido.
 RUN apt-get install -y nodejs
 
+# --- INSTALACIÓN EXPLÍCITA DE PIP PARA PYTHON ---
+# Instala python3-pip para asegurar que 'pip' esté disponible para python3.
+RUN apt-get install -y python3-pip
+
 # Copia todos tus archivos del repositorio al contenedor
 COPY . /app
 
@@ -35,7 +39,7 @@ WORKDIR /app
 
 # --- FASE DE CONSTRUCCIÓN DE DJANGO (Backend) ---
 # Instala las dependencias de Python desde requirements.txt
-RUN python3 -m pip install -r requirements.txt 
+RUN python3 -m pip install -r requirements.txt # Ahora 'pip' debería funcionar
 
 # Ejecuta collectstatic para recolectar los archivos estáticos de Django y React.
 # --noinput evita que pida confirmación.
