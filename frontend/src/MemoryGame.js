@@ -45,7 +45,7 @@ function MemoryGame() {
         setLoading(false);
         setFlashcards([]); // Limpiar flashcards si hay un error
       });
-  }, [API_BASE_URL]); // Agregamos API_BASE_URL a las dependencias
+  }, [API_BASE_URL]); 
 
   useEffect(() => {
     fetchFlashcards();

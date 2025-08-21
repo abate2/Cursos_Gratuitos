@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom'; // Agregamos Link aquí
-import './App.css'; 
+import React, { useState, useEffect, useCallback } from 'react'; // Agregamos useCallback
+import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import './App.css'; // Asegúrate de que los estilos se apliquen
 
 function CourseDetail() {
   const { id } = useParams();
@@ -8,15 +9,15 @@ function CourseDetail() {
   const [leccionActual, setLeccionActual] = useState(null);
   const [showActivities, setShowActivities] = useState(false); 
 
+  // --- Nuevos estados para el Mini-Cuestionario ---
+  const [quizQuestions, setQuizQuestions] = useState([]); // Todas las preguntas del quiz para la lección
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Índice de la pregunta actual
+  const [userAnswers, setUserAnswers] = useState({}); // Respuestas del usuario {questionId: optionId}
+  const [showQuizResults, setShowQuizResults] = useState(false); // Para mostrar los resultados al final
+  const [quizStarted, setQuizStarted] = useState(false); // Para controlar si el quiz ha iniciado
+
   // URL base de tu API de Django en Render
   const API_BASE_URL = 'https://cursos-django-backend.onrender.com/api'; // ¡USA ESTA URL!
-
-  // --- Nuevos estados para el Mini-Cuestionario ---
-  const [quizQuestions, setQuizQuestions] = useState([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState({});
-  const [showQuizResults, setShowQuizResults] = useState(false);
-  const [quizStarted, setQuizStarted] = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/cursos/${id}/`) // Usa la API_BASE_URL
@@ -24,32 +25,35 @@ function CourseDetail() {
       .then(data => {
         setCurso(data);
         if (data.lecciones.length > 0) {
-          setLeccionActual(data.lecciones[0]);
+          setLeccionActual(data.lecciones[0]); // Establece la primera lección por defecto
         }
       })
       .catch(error => console.error("Error fetching course:", error));
   }, [id, API_BASE_URL]); // Agregamos API_BASE_URL a las dependencias
 
+  // Cuando la lección actual cambia, colapsa las actividades y reinicia el quiz
   useEffect(() => {
     if (leccionActual) {
       setShowActivities(false); 
-      setQuizStarted(false);
+      setQuizStarted(false); // Reinicia el quiz al cambiar de lección
       setCurrentQuestionIndex(0);
       setUserAnswers({});
       setShowQuizResults(false);
+      // Llama a la función para cargar las preguntas del quiz de la nueva lección
       fetchQuizQuestions(leccionActual.id); 
     }
   }, [leccionActual, fetchQuizQuestions]); // Agregamos fetchQuizQuestions a las dependencias
 
+  // Función para obtener las preguntas del quiz de la API
   const fetchQuizQuestions = useCallback((leccionId) => {
     fetch(`${API_BASE_URL}/lecciones/${leccionId}/quiz_questions/`) // Usa la API_BASE_URL
       .then(response => response.json())
       .then(data => {
         setQuizQuestions(data);
-        console.log("Preguntas del quiz cargadas:", data);
+        console.log("Preguntas del quiz cargadas:", data); // Para depuración
       })
       .catch(error => console.error("Error fetching quiz questions:", error));
-  }, [API_BASE_URL]); // Agregamos API_BASE_URL a las dependencias
+  }, [API_BASE_URL]); // Dependencia vacía para que la función no cambie.
 
   const handleLeccionClick = (leccion) => {
     setLeccionActual(leccion);
@@ -73,6 +77,7 @@ function CourseDetail() {
     }
   };
 
+  // --- Funciones para el Mini-Cuestionario ---
   const startQuiz = () => {
     setQuizStarted(true);
     setCurrentQuestionIndex(0);
@@ -91,7 +96,7 @@ function CourseDetail() {
     if (currentQuestionIndex < quizQuestions.length - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
     } else {
-      setShowQuizResults(true);
+      setShowQuizResults(true); // Mostrar resultados al terminar
     }
   };
 
@@ -99,7 +104,7 @@ function CourseDetail() {
     setCurrentQuestionIndex(0);
     setUserAnswers({});
     setShowQuizResults(false);
-    setQuizStarted(false);
+    setQuizStarted(false); // Volver al estado inicial para que aparezca el botón "Iniciar Cuestionario"
   };
 
   const calculateScore = () => {
@@ -124,6 +129,7 @@ function CourseDetail() {
     <div className="course-detail">
       <h1>{curso.titulo}</h1>
       <div className="lecciones-container">
+        {/* Panel de menú de lecciones (izquierda) */}
         <div className="lecciones-list">
           <h2>Contenido del curso</h2>
           <ul>
@@ -138,12 +144,15 @@ function CourseDetail() {
             ))}
           </ul>
         </div>
+        {/* Contenido de la lección (derecha) */}
         <div className="leccion-content">
           {leccionActual ? (
             <div>
               <h3>{leccionActual.titulo}</h3>
+              {/* Contenido de la lección */}
               <div dangerouslySetInnerHTML={{ __html: leccionActual.contenido_texto }}></div>
               
+              {/* Sección de Actividades */}
               <div className="activities-section">
                 <h3 onClick={() => setShowActivities(!showActivities)} className="activities-toggle">
                   Actividades {showActivities ? '▲' : '▼'}
@@ -151,20 +160,23 @@ function CourseDetail() {
 
                 {showActivities && (
                   <div className="activities-content">
+                    {/* Botón para ir al juego de memorizar */}
                     <Link to="/juego-memorizar">
                         <button className="activity-button">Ir al Juego de Memorizar</button>
                     </Link>
+                    {/* El enunciado "Aquí se incluirán otras actividades interactivas para esta lección en el futuro." ha sido removido. */}
 
+                    {/* --- Mini-Cuestionario --- */}
                     <div className="mini-quiz-container">
                       {quizQuestions.length > 0 ? (
                         <>
-                          {!quizStarted && (
+                          {!quizStarted && ( // Mostrar botón de iniciar si el quiz no ha empezado
                             <button onClick={startQuiz} className="quiz-start-button">
                               Iniciar Mini-Cuestionario
                             </button>
                           )}
 
-                          {quizStarted && !showQuizResults && currentQuestion && (
+                          {quizStarted && !showQuizResults && currentQuestion && ( // Mostrar pregunta si el quiz ha iniciado y no hay resultados
                             <div className="quiz-question-card">
                               <h4>Pregunta {currentQuestionIndex + 1} de {quizQuestions.length}</h4>
                               <p className="question-text">{currentQuestion.question_text}</p>
@@ -183,14 +195,14 @@ function CourseDetail() {
                               <button 
                                 className="quiz-navigation-button" 
                                 onClick={goToNextQuestion}
-                                disabled={!userAnswers[currentQuestion.id]}
+                                disabled={!userAnswers[currentQuestion.id]} // Deshabilitar si no ha seleccionado opción
                               >
                                 {currentQuestionIndex === quizQuestions.length - 1 ? 'Ver Resultados' : 'Siguiente Pregunta'}
                               </button>
                             </div>
                           )}
 
-                          {quizStarted && showQuizResults && (
+                          {quizStarted && showQuizResults && ( // Mostrar resultados al finalizar
                             <div className="quiz-results-card">
                               <h4>Resultados del Cuestionario</h4>
                               <p>Has obtenido {calculateScore()} de {quizQuestions.length} respuestas correctas.</p>
@@ -222,6 +234,7 @@ function CourseDetail() {
               </div>
 
               <div className="leccion-buttons">
+                {/* Botón para regresar a la página principal de cursos */}
                 <Link to="/">
                     <button className="tertiary-button">Volver a Cursos</button>
                 </Link>

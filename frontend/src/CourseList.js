@@ -7,7 +7,7 @@ function CourseList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // ¡CAMBIA ESTA URL a la de tu backend en Render!
+    // ¡URL de tu backend en Render!
     fetch('https://cursos-django-backend.onrender.com/api/cursos/') 
       .then(response => response.json())
       .then(data => {
