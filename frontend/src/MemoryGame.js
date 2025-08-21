@@ -1,68 +1,58 @@
+// frontend/src/MemoryGame.js
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom'; // <-- ¡Importa Link!
+import { Link } from 'react-router-dom';
 import Flashcard from './Flashcard';
-import './App.css'; // Asegúrate de que los estilos se apliquen
+import './App.css';
 
 function MemoryGame() {
-  const [allRawFlashcards, setAllRawFlashcards] = useState([]); 
-  const [displayFlashcards, setDisplayFlashcards] = useState([]); 
+  // URL base de tu API de Django en Render
+  const API_BASE_URL = 'https://cursos-django-backend.onrender.com/api'; // ¡USA ESTA URL!
+
+  const [flashcards, setFlashcards] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
-  const [gameStarted, setGameStarted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchRawFlashcards = useCallback(() => {
+  const fetchFlashcards = useCallback(() => {
     setLoading(true);
-    fetch(`http://127.0.0.1:8000/api/flashcards/`) 
+    // Ahora llama a la ruta de todas las flashcards
+    fetch(`${API_BASE_URL}/flashcards/`) 
       .then(response => response.json())
       .then(data => {
-        setAllRawFlashcards(data); 
+        if (data.length < 3) { // Necesitas al menos 3 flashcards para 6 tarjetas (3 pares)
+          console.warn("No hay suficientes flashcards para jugar. Necesitas al menos 3.");
+          setFlashcards([]);
+          setLoading(false);
+          return;
+        }
+
+        // Tomar un número par de flashcards para el juego, por ejemplo, 6 flashcards (12 tarjetas)
+        const selectedFlashcards = data.slice(0, 6); 
+
+        // Crear pares de tarjetas (palabra y significado)
+        const initialCards = selectedFlashcards.flatMap(card => [
+          { id: card.id + '-word', type: 'word', content: card.palabra, pairId: card.id },
+          { id: card.id + '-meaning', type: 'meaning', content: card.significado, pairId: card.id }
+        ]);
+
+        setFlashcards(shuffleArray(initialCards));
+        setFlippedCards([]);
+        setMatchedCards([]);
         setLoading(false);
       })
       .catch(error => {
-        console.error("Error fetching all flashcards:", error);
+        console.error("Error fetching flashcards:", error);
         setLoading(false);
+        setFlashcards([]); // Limpiar flashcards si hay un error
       });
-  }, []); 
+  }, [API_BASE_URL]); // Agregamos API_BASE_URL a las dependencias
 
   useEffect(() => {
-    fetchRawFlashcards();
-  }, [fetchRawFlashcards]); 
-
-  const prepareAndShuffleCards = useCallback((rawCards) => {
-    if (rawCards.length < 1) { 
-        console.warn("No hay flashcards para jugar en este momento. Por favor, añade al menos una en el panel de administración.");
-        setDisplayFlashcards([]);
-        return;
-    }
-
-    const shuffledRawCards = shuffleArray(rawCards);
-    const cardsToUseForGame = shuffledRawCards.slice(0, 6); 
-
-    if (cardsToUseForGame.length < 1) { 
-        console.warn("No hay flashcards suficientes para el juego después de la selección. Necesitas al menos 1.");
-        setDisplayFlashcards([]);
-        return;
-    }
-
-    const initialCards = cardsToUseForGame.flatMap(card => [
-      { id: card.id + '-word', type: 'word', content: card.palabra, pairId: card.id },
-      { id: card.id + '-meaning', type: 'meaning', content: card.significado, pairId: card.id }
-    ]);
-    
-    setDisplayFlashcards(shuffleArray(initialCards));
-    setFlippedCards([]); 
-    setMatchedCards([]); 
-  }, []); 
-
-  useEffect(() => {
-    if (allRawFlashcards.length > 0 && !gameStarted) { 
-      prepareAndShuffleCards(allRawFlashcards);
-    }
-  }, [allRawFlashcards, gameStarted, prepareAndShuffleCards]); 
+    fetchFlashcards();
+  }, [fetchFlashcards]);
 
   const shuffleArray = (array) => {
-    const shuffled = [...array]; 
+    const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -72,18 +62,18 @@ function MemoryGame() {
 
   const handleCardClick = (clickedCard) => {
     if (flippedCards.length === 2 || matchedCards.includes(clickedCard.id)) {
-      return; 
+      return;
     }
 
     setFlippedCards(prev => [...prev, clickedCard.id]);
 
     if (flippedCards.length === 1) {
       const firstCardId = flippedCards[0];
-      const firstCard = displayFlashcards.find(card => card.id === firstCardId);
+      const firstCard = flashcards.find(card => card.id === firstCardId);
 
       if (firstCard.pairId === clickedCard.pairId && firstCard.id !== clickedCard.id) {
         setMatchedCards(prev => [...prev, firstCard.id, clickedCard.id]);
-        setFlippedCards([]); 
+        setFlippedCards([]);
       } else {
         setTimeout(() => {
           setFlippedCards([]);
@@ -92,66 +82,47 @@ function MemoryGame() {
     }
   };
 
-  const startGame = () => {
-    setGameStarted(true); 
-    prepareAndShuffleCards(allRawFlashcards); 
+  const resetGame = () => {
+    fetchFlashcards(); // Vuelve a cargar y barajar las tarjetas
   };
 
-  const refreshVocabulary = () => {
-    setGameStarted(false); 
-    setFlippedCards([]);
-    setMatchedCards([]);
-    fetchRawFlashcards(); 
-  };
-
-  const allCardsMatched = displayFlashcards.length > 0 && matchedCards.length === displayFlashcards.length;
+  const allCardsMatched = flashcards.length > 0 && matchedCards.length === flashcards.length;
 
   if (loading) {
-    return <p>Cargando tarjetas del juego...</p>;
+    return <p className="memory-game-container">Cargando juego...</p>;
   }
 
   return (
     <div className="memory-game-container">
       <h2>Juego de Memorizar Vocabulario</h2>
-      {displayFlashcards.length > 0 ? (
-        <>
-          {!gameStarted && (
-            <div className="game-controls">
-              <button onClick={startGame}>Iniciar Juego</button>
-              <button onClick={refreshVocabulary} className="secondary-button">Actualizar Vocabulario</button>
-              <Link to="/"> {/* <-- ¡Nuevo botón para regresar a la página principal! */}
-                <button className="tertiary-button">Volver a Cursos</button>
-              </Link>
-            </div>
-          )}
-
-          {gameStarted && (
-            <div className="flashcards-grid">
-              {displayFlashcards.map(card => (
-                <Flashcard
-                  key={card.id}
-                  palabra={card.type === 'word' ? card.content : null}
-                  significado={card.type === 'meaning' ? card.content : null}
-                  isFlipped={flippedCards.includes(card.id) || matchedCards.includes(card.id)}
-                  onClick={() => handleCardClick(card)}
-                />
-              ))}
-            </div>
-          )}
-
-          {gameStarted && allCardsMatched && (
-            <div className="game-controls">
-              <p>¡Felicidades! Has emparejado todas las tarjetas.</p>
-              <button onClick={startGame}>Volver a Jugar</button>
-              <button onClick={refreshVocabulary} className="secondary-button">Actualizar Vocabulario</button>
-              <Link to="/"> {/* <-- ¡También aquí para cuando se termina el juego! */}
-                <button className="tertiary-button">Volver a Cursos</button>
-              </Link>
-            </div>
-          )}
-        </>
+      {flashcards.length === 0 ? (
+        <p>No hay suficientes flashcards disponibles para iniciar el juego.</p>
       ) : (
-        <p>No hay flashcards disponibles para jugar. Por favor, añade algunas en el panel de administración.</p>
+        <>
+          <div className="flashcards-grid">
+            {flashcards.map(card => (
+              <Flashcard
+                key={card.id}
+                palabra={card.type === 'word' ? card.content : null}
+                significado={card.type === 'meaning' ? card.content : null}
+                isFlipped={flippedCards.includes(card.id) || matchedCards.includes(card.id)}
+                onClick={() => handleCardClick(card)}
+              />
+            ))}
+          </div>
+
+          <div className="game-controls">
+            {allCardsMatched ? (
+              <p>¡Felicidades! Has emparejado todas las tarjetas.</p>
+            ) : (
+              <p>Voltea las tarjetas y encuentra los pares.</p>
+            )}
+            <button onClick={resetGame}>Volver a Jugar</button>
+            <Link to="/">
+              <button className="secondary-button">Volver a Cursos</button>
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );
