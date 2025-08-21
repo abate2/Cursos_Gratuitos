@@ -1,6 +1,6 @@
 # Usa una imagen base que incluya Python y Node.js
 # Esta imagen es adecuada para Railway y Nixpacks
-FROM ghcr.io/railwayapp/nixpacks:ubuntu-latest
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067 # <-- ¡LÍNEA CORREGIDA AQUÍ!
 
 # Configura el directorio de trabajo dentro del contenedor
 WORKDIR /app
