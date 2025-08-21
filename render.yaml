@@ -1,0 +1,50 @@
+# render.yaml en la raíz de tu repositorio
+services:
+  - type: web # Servicio para tu backend Django
+    name: mi-plataforma-backend # Nombre de tu servicio backend
+    env: python
+    # buildCommand ahora es más explícito y muestra más logs
+    buildCommand: |
+      echo "--- Iniciando Build Command ---"
+      echo "Directorio actual: $(pwd)"
+      ls -la
+      echo "Cambiando a frontend/"
+      cd frontend
+      echo "Directorio frontend: $(pwd)"
+      ls -la
+      echo "Instalando dependencias de Node.js..."
+      npm install --legacy-peer-deps
+      echo "Compilando aplicación React..."
+      npm run build
+      echo "Volviendo al directorio raíz..."
+      cd ../
+      echo "Directorio raíz: $(pwd)"
+      ls -la
+      echo "Instalando dependencias de Python..."
+      pip install -r requirements.txt
+      echo "Recolectando archivos estáticos..."
+      python manage.py collectstatic --noinput
+      echo "Ejecutando migraciones de base de datos..."
+      python manage.py migrate
+      echo "--- Build Command Finalizado ---"
+    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT # Comando para iniciar el servidor Django
+    healthCheckPath: /admin/login/
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: mi-plataforma-cursos-db # ¡DEBE COINCIDIR con el nombre de tu base de datos en Render!
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: DEBUG_VALUE
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "${RENDER_EXTERNAL_HOSTNAME}"
+
+  - type: postgres # Servicio de base de datos
+    name: mi-plataforma-cursos-db # Nombre de la base de datos (¡DEBE COINCIDIR con fromDatabase arriba!)
+    plan: free
+    databaseName: micursodb # Nombre de la base de datos interna
+    user: miusuario # Usuario de la base de datos
