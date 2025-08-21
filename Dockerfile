@@ -1,40 +1,46 @@
-# Usa una imagen base que incluya Python y Node.js
-# Esta imagen es adecuada para Railway y Nixpacks
-FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067 # <-- ¡LÍNEA CORREGIDA AQUÍ!
+    # Usa una imagen base de Railway/Nixpacks que incluya Python
+    # FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+    # CAMBIADO A UNA BASE MÁS GENÉRICA Y LUEGO INSTALAMOS NODE EXPLICITAMENTE
+    FROM python:3.10-slim-buster # Una imagen ligera con Python 3.10
 
-# Configura el directorio de trabajo dentro del contenedor
-WORKDIR /app
+    # Instala herramientas necesarias para npm (curl, gnupg)
+    RUN apt-get update && apt-get install -y curl gnupg && rm -rf /var/lib/apt/lists/*
 
-# Copia todos tus archivos del repositorio al contenedor
-COPY . /app
+    # Instala Node.js v20 (o superior, ajusta si es necesario)
+    RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    RUN apt-get install -y nodejs
 
-# --- FASE DE CONSTRUCCIÓN DE REACT (Frontend) ---
-# Navega a la carpeta del frontend
-WORKDIR /app/frontend
+    # Configura el directorio de trabajo dentro del contenedor
+    WORKDIR /app
 
-# Instala las dependencias de Node.js
-RUN npm install
+    # Copia todos tus archivos del repositorio al contenedor
+    COPY . /app
 
-# Compila la aplicación React
-RUN npm run build
+    # --- FASE DE CONSTRUCCIÓN DE REACT (Frontend) ---
+    # Navega a la carpeta del frontend
+    WORKDIR /app/frontend
 
-# Vuelve al directorio raíz de la aplicación (donde está manage.py)
-WORKDIR /app
+    # Instala las dependencias de Node.js
+    RUN npm install --legacy-peer-deps # Usar --legacy-peer-deps para evitar problemas de dependencias
 
-# --- FASE DE CONSTRUCCIÓN DE DJANGO (Backend) ---
-# Instala las dependencias de Python desde requirements.txt
-# Esto asegurará que gunicorn, dj-database-url, psycopg2-binary, etc., se instalen
-RUN pip install -r requirements.txt
+    # Compila la aplicación React
+    RUN npm run build
 
-# Ejecuta collectstatic para recolectar los archivos estáticos de Django y React
-RUN python manage.py collectstatic --noinput
+    # Vuelve al directorio raíz de la aplicación (donde está manage.py)
+    WORKDIR /app
 
-# Ejecuta las migraciones de la base de datos
-# Esto se hará en el momento de la construcción. Si prefieres que se haga al iniciar el contenedor,
-# deberías moverlo al Start Command, pero para simplificar, lo hacemos aquí.
-RUN python manage.py migrate
+    # --- FASE DE CONSTRUCCIÓN DE DJANGO (Backend) ---
+    # Instala las dependencias de Python desde requirements.txt
+    RUN pip install -r requirements.txt
 
-# --- COMANDO DE INICIO DE LA APLICACIÓN ---
-# Define el comando que se ejecutará cuando el contenedor se inicie
-# Este es tu Start Command, ejecutando Gunicorn
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+    # Ejecuta collectstatic para recolectar los archivos estáticos de Django y React
+    # --noinput para que no pida confirmación
+    RUN python manage.py collectstatic --noinput
+
+    # Ejecuta las migraciones de la base de datos
+    RUN python manage.py migrate
+
+    # --- COMANDO DE INICIO DE LA APLICACIÓN ---
+    # Define el comando que se ejecutará cuando el contenedor se inicie
+    CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+    
