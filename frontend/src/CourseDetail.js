@@ -1,261 +1,259 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Agregamos useCallback
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import './App.css'; // Asegúrate de que los estilos se apliquen
+// frontend/src/CourseDetail.js
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify'; // Para sanitizar HTML
+import './CourseDetail.css'; // Asegúrate de que este CSS exista
+import MemoryGame from './MemoryGame'; // Importa el componente del juego de memoria
 
 function CourseDetail() {
-  const { id } = useParams();
-  const [curso, setCurso] = useState(null);
-  const [leccionActual, setLeccionActual] = useState(null);
-  const [showActivities, setShowActivities] = useState(false); 
+    const { id } = useParams(); // Obtiene el ID del curso de la URL
+    const courseId = parseInt(id); // Convierte el ID a número entero
+    const navigate = useNavigate(); // Para la navegación programática
 
-  // --- Nuevos estados para el Mini-Cuestionario ---
-  const [quizQuestions, setQuizQuestions] = useState([]); // Todas las preguntas del quiz para la lección
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Índice de la pregunta actual
-  const [userAnswers, setUserAnswers] = useState({}); // Respuestas del usuario {questionId: optionId}
-  const [showQuizResults, setShowQuizResults] = useState(false); // Para mostrar los resultados al final
-  const [quizStarted, setQuizStarted] = useState(false); // Para controlar si el quiz ha iniciado
+    const [course, setCourse] = useState(null);
+    const [quizQuestions, setQuizQuestions] = useState([]);
+    const [userAnswers, setUserAnswers] = useState({});
+    const [score, setScore] = useState(0);
+    const [showScore, setShowScore] = useState(false);
+    const [quizStarted, setQuizStarted] = useState(false); // Estado para controlar si el quiz ha iniciado
+    const [showMemoryGame, setShowMemoryGame] = useState(false); // Estado para mostrar el juego de memoria
 
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/cursos/${id}/`)
-      .then(response => response.json())
-      .then(data => {
-        setCurso(data);
-        if (data.lecciones.length > 0) {
-          setLeccionActual(data.lecciones[0]); // Establece la primera lección por defecto
+    // URL base de tu API de Django (¡Actualizar con la URL de Railway cuando esté lista!)
+    // const API_BASE_URL = 'http://127.0.0.1:8000/api'; // Para desarrollo local
+    const API_BASE_URL = 'https://TU_URL_DE_RAILWAY_BACKEND.up.railway.app/api'; // ¡ACTUALIZA ESTA LÍNEA CON TU URL REAL DE RAILWAY!
+
+    // Función para obtener los detalles del curso
+    const fetchCourseDetail = useCallback(async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/cursos/${courseId}/`);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    navigate('/not-found'); // Redirige si el curso no se encuentra
+                    return;
+                }
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            const data = await response.json();
+            setCourse(data);
+        } catch (error) {
+            console.error("Error al cargar los detalles del curso:", error);
+            // Podrías mostrar un mensaje de error al usuario
         }
-      })
-      .catch(error => console.error("Error fetching course:", error));
-  }, [id]);
+    }, [courseId, navigate]); // Dependencias del useCallback
 
-  // Cuando la lección actual cambia, colapsa las actividades y reinicia el quiz
-  useEffect(() => {
-    if (leccionActual) {
-      setShowActivities(false); 
-      setQuizStarted(false); // Reinicia el quiz al cambiar de lección
-      setCurrentQuestionIndex(0);
-      setUserAnswers({});
-      setShowQuizResults(false);
-      // Llama a la función para cargar las preguntas del quiz de la nueva lección
-      fetchQuizQuestions(leccionActual.id); 
+    // Función para obtener las preguntas del quiz
+    const fetchQuizQuestions = useCallback(async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/cursos/${courseId}/preguntas_quiz/`);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            const data = await response.json();
+            setQuizQuestions(data);
+            // Inicializa las respuestas del usuario vacías
+            const initialAnswers = {};
+            data.forEach(q => {
+                if (q.tipo_pregunta === 'multiple_choice' || q.tipo_pregunta === 'true_false') {
+                    initialAnswers[q.id] = null; // Para preguntas de opción múltiple y V/F
+                } else if (q.tipo_pregunta === 'fill_in_the_blank') {
+                    initialAnswers[q.id] = ''; // Para rellenar espacios
+                }
+            });
+            setUserAnswers(initialAnswers);
+            setQuizStarted(false); // Reinicia el estado del quiz al cargar nuevas preguntas
+            setScore(0);
+            setShowScore(false);
+        } catch (error) {
+            console.error("Error al cargar las preguntas del quiz:", error);
+        }
+    }, [courseId]); // Dependencias del useCallback
+
+    // useEffect para cargar los detalles del curso y las preguntas del quiz
+    useEffect(() => {
+        fetchCourseDetail();
+        fetchQuizQuestions(); // Llama a la función para obtener las preguntas del quiz
+    }, [courseId, fetchCourseDetail, fetchQuizQuestions]); // ¡Línea 42: Añadido fetchQuizQuestions aquí!
+
+    // Maneja el cambio de respuestas para preguntas de opción múltiple y V/F
+    const handleAnswerChange = (questionId, selectedOptionId) => {
+        setUserAnswers(prevAnswers => ({
+            ...prevAnswers,
+            [questionId]: selectedOptionId
+        }));
+    };
+
+    // Maneja el cambio de respuestas para rellenar espacios
+    const handleFillInTheBlankChange = (questionId, value) => {
+        setUserAnswers(prevAnswers => ({
+            ...prevAnswers,
+            [questionId]: value
+        }));
+    };
+
+    // Evalúa el quiz
+    const handleSubmitQuiz = () => {
+        let currentScore = 0;
+        quizQuestions.forEach(q => {
+            if (q.tipo_pregunta === 'multiple_choice' || q.tipo_pregunta === 'true_false') {
+                // Compara la opción seleccionada con la opción correcta
+                const selectedOption = userAnswers[q.id];
+                const correctOption = q.opciones.find(opt => opt.es_correcta);
+                if (selectedOption === correctOption?.id) {
+                    currentScore += 1;
+                }
+            } else if (q.tipo_pregunta === 'fill_in_the_blank') {
+                // Compara la respuesta escrita con la respuesta esperada (sensible a mayúsculas/minúsculas)
+                if (userAnswers[q.id]?.toLowerCase().trim() === q.respuesta_esperada?.toLowerCase().trim()) {
+                    currentScore += 1;
+                }
+            }
+        });
+        setScore(currentScore);
+        setShowScore(true);
+    };
+
+    // Inicia el quiz
+    const startQuiz = () => {
+        setQuizStarted(true);
+        // Reinicializa las respuestas al iniciar el quiz
+        const initialAnswers = {};
+        quizQuestions.forEach(q => {
+            if (q.tipo_pregunta === 'multiple_choice' || q.tipo_pregunta === 'true_false') {
+                initialAnswers[q.id] = null;
+            } else if (q.tipo_pregunta === 'fill_in_the_blank') {
+                initialAnswers[q.id] = '';
+            }
+        });
+        setUserAnswers(initialAnswers);
+        setScore(0);
+        setShowScore(false);
+    };
+
+    // Si el curso aún no se ha cargado, muestra un mensaje de carga
+    if (!course) {
+        return <div className="loading-message">Cargando detalles del curso...</div>;
     }
-  }, [leccionActual]);
 
-  // Función para obtener las preguntas del quiz de la API
-  const fetchQuizQuestions = useCallback((leccionId) => {
-    fetch(`http://127.0.0.1:8000/api/lecciones/${leccionId}/quiz_questions/`)
-      .then(response => response.json())
-      .then(data => {
-        setQuizQuestions(data);
-        console.log("Preguntas del quiz cargadas:", data); // Para depuración
-      })
-      .catch(error => console.error("Error fetching quiz questions:", error));
-  }, []); // Dependencia vacía para que la función no cambie.
+    return (
+        <div className="course-detail-container">
+            <button onClick={() => navigate(-1)} className="back-button">
+                &larr; Volver a Cursos
+            </button>
+            <h1 className="course-title">{course.titulo}</h1>
+            <p className="course-category">Categoría: {course.categoria}</p>
+            <img src={course.imagen_portada} alt={course.titulo} className="course-cover-image" />
 
-  const handleLeccionClick = (leccion) => {
-    setLeccionActual(leccion);
-  };
+            <div className="course-description" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(course.descripcion) }} />
 
-  const handleNextLeccion = () => {
-    const currentIndex = curso.lecciones.findIndex(
-      (leccion) => leccion.id === leccionActual.id
-    );
-    if (currentIndex < curso.lecciones.length - 1) {
-      setLeccionActual(curso.lecciones[currentIndex + 1]);
-    }
-  };
+            {/* Sección de Recursos */}
+            {course.recursos && course.recursos.length > 0 && (
+                <div className="course-resources">
+                    <h2>Recursos Adicionales</h2>
+                    <ul>
+                        {course.recursos.map((recurso, index) => (
+                            <li key={index}>
+                                <a href={recurso.url} target="_blank" rel="noopener noreferrer">{recurso.nombre}</a>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
-  const handlePrevLeccion = () => {
-    const currentIndex = curso.lecciones.findIndex(
-      (leccion) => leccion.id === leccionActual.id
-    );
-    if (currentIndex > 0) {
-      setLeccionActual(curso.lecciones[currentIndex - 1]);
-    }
-  };
-
-  // --- Funciones para el Mini-Cuestionario ---
-  const startQuiz = () => {
-    setQuizStarted(true);
-    setCurrentQuestionIndex(0);
-    setUserAnswers({});
-    setShowQuizResults(false);
-  };
-
-  const handleOptionSelect = (questionId, optionId) => {
-    setUserAnswers(prevAnswers => ({
-      ...prevAnswers,
-      [questionId]: optionId,
-    }));
-  };
-
-  const goToNextQuestion = () => {
-    if (currentQuestionIndex < quizQuestions.length - 1) {
-      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-    } else {
-      setShowQuizResults(true); // Mostrar resultados al terminar
-    }
-  };
-
-  const retakeQuiz = () => {
-    setCurrentQuestionIndex(0);
-    setUserAnswers({});
-    setShowQuizResults(false);
-    setQuizStarted(false); // Volver al estado inicial para que aparezca el botón "Iniciar Cuestionario"
-  };
-
-  const calculateScore = () => {
-    let score = 0;
-    quizQuestions.forEach(question => {
-      const selectedOptionId = userAnswers[question.id];
-      const correctOption = question.options.find(option => option.is_correct);
-      if (selectedOptionId === correctOption?.id) {
-        score += 1;
-      }
-    });
-    return score;
-  };
-
-  if (!curso) {
-    return <p>Cargando curso...</p>;
-  }
-
-  const currentQuestion = quizQuestions[currentQuestionIndex];
-
-  return (
-    <div className="course-detail">
-      <h1>{curso.titulo}</h1>
-      <div className="lecciones-container">
-        {/* Panel de menú de lecciones (izquierda) */}
-        <div className="lecciones-list">
-          <h2>Contenido del curso</h2>
-          <ul>
-            {curso.lecciones.map((leccion) => (
-              <li
-                key={leccion.id}
-                onClick={() => handleLeccionClick(leccion)}
-                className={leccion.id === leccionActual?.id ? 'active' : ''}
-              >
-                {leccion.titulo}
-              </li>
-            ))}
-          </ul>
-        </div>
-        {/* Contenido de la lección (derecha) */}
-        <div className="leccion-content">
-          {leccionActual ? (
-            <div>
-              <h3>{leccionActual.titulo}</h3>
-              {/* Contenido de la lección */}
-              <div dangerouslySetInnerHTML={{ __html: leccionActual.contenido_texto }}></div>
-              
-              {/* Sección de Actividades */}
-              <div className="activities-section">
-                <h3 onClick={() => setShowActivities(!showActivities)} className="activities-toggle">
-                  Actividades {showActivities ? '▲' : '▼'}
-                </h3>
-
-                {showActivities && (
-                  <div className="activities-content">
-                    {/* Botón para ir al juego de memorizar */}
-                    <Link to="/juego-memorizar">
-                        <button className="activity-button">Ir al Juego de Memorizar</button>
-                    </Link>
-                    {/* El enunciado "Aquí se incluirán otras actividades interactivas para esta lección en el futuro." ha sido removido. */}
-
-                    {/* --- Mini-Cuestionario --- */}
-                    <div className="mini-quiz-container">
-                      {quizQuestions.length > 0 ? (
+            {/* Sección del Quiz */}
+            {quizQuestions.length > 0 && (
+                <div className="quiz-section">
+                    <h2>Quiz del Curso</h2>
+                    {!quizStarted ? (
+                        <button onClick={startQuiz} className="start-quiz-button">Iniciar Quiz</button>
+                    ) : (
                         <>
-                          {!quizStarted && ( // Mostrar botón de iniciar si el quiz no ha empezado
-                            <button onClick={startQuiz} className="quiz-start-button">
-                              Iniciar Mini-Cuestionario
-                            </button>
-                          )}
+                            {quizQuestions.map((q, index) => (
+                                <div key={q.id} className="quiz-question-card">
+                                    <p className="question-number">Pregunta {index + 1}:</p>
+                                    <p className="question-text">{q.texto_pregunta}</p>
+                                    {q.tipo_pregunta === 'multiple_choice' && (
+                                        <div className="options-container">
+                                            {q.opciones.map(option => (
+                                                <label key={option.id} className="option-label">
+                                                    <input
+                                                        type="radio"
+                                                        name={`question-${q.id}`}
+                                                        value={option.id}
+                                                        checked={userAnswers[q.id] === option.id}
+                                                        onChange={() => handleAnswerChange(q.id, option.id)}
+                                                    />
+                                                    {option.texto_opcion}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {q.tipo_pregunta === 'true_false' && (
+                                        <div className="options-container">
+                                            <label className="option-label">
+                                                <input
+                                                    type="radio"
+                                                    name={`question-${q.id}`}
+                                                    value={true}
+                                                    checked={userAnswers[q.id] === true}
+                                                    onChange={() => handleAnswerChange(q.id, true)}
+                                                />
+                                                Verdadero
+                                            </label>
+                                            <label className="option-label">
+                                                <input
+                                                    type="radio"
+                                                    name={`question-${q.id}`}
+                                                    value={false}
+                                                    checked={userAnswers[q.id] === false}
+                                                    onChange={() => handleAnswerChange(q.id, false)}
+                                                />
+                                                Falso
+                                            </label>
+                                        </div>
+                                    )}
+                                    {q.tipo_pregunta === 'fill_in_the_blank' && (
+                                        <input
+                                            type="text"
+                                            className="fill-in-the-blank-input"
+                                            value={userAnswers[q.id] || ''}
+                                            onChange={(e) => handleFillInTheBlankChange(q.id, e.target.value)}
+                                            placeholder="Escribe tu respuesta aquí"
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                            <button onClick={handleSubmitQuiz} className="submit-quiz-button">Enviar Quiz</button>
 
-                          {quizStarted && !showQuizResults && currentQuestion && ( // Mostrar pregunta si el quiz ha iniciado y no hay resultados
-                            <div className="quiz-question-card">
-                              <h4>Pregunta {currentQuestionIndex + 1} de {quizQuestions.length}</h4>
-                              <p className="question-text">{currentQuestion.question_text}</p>
-                              <div className="quiz-options">
-                                {currentQuestion.options.map(option => (
-                                  <button
-                                    key={option.id}
-                                    className={`quiz-option-button 
-                                      ${userAnswers[currentQuestion.id] === option.id ? 'selected' : ''}`}
-                                    onClick={() => handleOptionSelect(currentQuestion.id, option.id)}
-                                  >
-                                    {option.option_text}
-                                  </button>
-                                ))}
-                              </div>
-                              <button 
-                                className="quiz-navigation-button" 
-                                onClick={goToNextQuestion}
-                                disabled={!userAnswers[currentQuestion.id]} // Deshabilitar si no ha seleccionado opción
-                              >
-                                {currentQuestionIndex === quizQuestions.length - 1 ? 'Ver Resultados' : 'Siguiente Pregunta'}
-                              </button>
-                            </div>
-                          )}
-
-                          {quizStarted && showQuizResults && ( // Mostrar resultados al finalizar
-                            <div className="quiz-results-card">
-                              <h4>Resultados del Cuestionario</h4>
-                              <p>Has obtenido {calculateScore()} de {quizQuestions.length} respuestas correctas.</p>
-                              <div className="review-answers">
-                                {quizQuestions.map((question, index) => {
-                                  const selectedOptionId = userAnswers[question.id];
-                                  const correctOption = question.options.find(option => option.is_correct);
-                                  const isCorrect = selectedOptionId === correctOption?.id;
-
-                                  return (
-                                    <div key={question.id} className={`answer-review-item ${isCorrect ? 'correct' : 'incorrect'}`}>
-                                      <p><strong>{index + 1}. {question.question_text}</strong></p>
-                                      <p>Tu respuesta: {question.options.find(opt => opt.id === selectedOptionId)?.option_text || 'No respondido'}</p>
-                                      <p>Respuesta correcta: {correctOption?.option_text}</p>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                              <button onClick={retakeQuiz} className="quiz-retake-button">Volver a Intentar</button>
-                            </div>
-                          )}
+                            {showScore && (
+                                <div className="quiz-results">
+                                    <h3>Tu Puntuación: {score} de {quizQuestions.length}</h3>
+                                    {score === quizQuestions.length ? (
+                                        <p className="quiz-passed">¡Felicidades! Has aprobado el quiz.</p>
+                                    ) : (
+                                        <p className="quiz-failed">Sigue practicando, puedes mejorar.</p>
+                                    )}
+                                </div>
+                            )}
                         </>
-                      ) : (
-                        <p>No hay mini-cuestionarios disponibles para esta lección.</p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+                    )}
+                </div>
+            )}
 
-              <div className="leccion-buttons">
-                {/* Botón para regresar a la página principal de cursos */}
-                <Link to="/">
-                    <button className="tertiary-button">Volver a Cursos</button>
-                </Link>
-                <button
-                  onClick={handlePrevLeccion}
-                  disabled={leccionActual.id === curso.lecciones[0].id}
-                >
-                  Lección Anterior
+            {/* Sección del Juego de Memoria */}
+            <div className="memory-game-toggle-section">
+                <button onClick={() => setShowMemoryGame(!showMemoryGame)} className="toggle-game-button">
+                    {showMemoryGame ? 'Ocultar Juego de Memoria' : 'Mostrar Juego de Memoria'}
                 </button>
-                <button
-                  onClick={handleNextLeccion}
-                  disabled={leccionActual.id === curso.lecciones[curso.lecciones.length - 1].id}
-                >
-                  Siguiente Lección
-                </button>
-              </div>
+                {showMemoryGame && (
+                    <div className="memory-game-container">
+                        <h2>Juego de Memoria</h2>
+                        {/* Puedes pasarle props al juego de memoria si es necesario, como las palabras del curso */}
+                        <MemoryGame courseId={courseId} API_BASE_URL={API_BASE_URL} />
+                    </div>
+                )}
             </div>
-          ) : (
-            <p>Selecciona una lección para comenzar.</p>
-          )}
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default CourseDetail;
