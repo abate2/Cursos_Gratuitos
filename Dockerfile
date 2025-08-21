@@ -35,7 +35,7 @@ WORKDIR /app
 
 # --- FASE DE CONSTRUCCIÓN DE DJANGO (Backend) ---
 # Instala las dependencias de Python desde requirements.txt
-RUN pip install -r requirements.txt
+RUN python3 -m pip install -r requirements.txt 
 
 # Ejecuta collectstatic para recolectar los archivos estáticos de Django y React.
 # --noinput evita que pida confirmación.
