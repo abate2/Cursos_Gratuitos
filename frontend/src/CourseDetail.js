@@ -72,7 +72,7 @@ function CourseDetail() {
     useEffect(() => {
         fetchCourseDetail();
         fetchQuizQuestions(); // Llama a la función para obtener las preguntas del quiz
-    }, [courseId, fetchCourseDetail, fetchQuizQuestions]); // ¡Línea 42: Añadido fetchQuizQuestions aquí!
+    }, [courseId, fetchCourseDetail, fetchQuizQuestions]); // <-- ¡Aquí se añadió fetchQuizQuestions!
 
     // Maneja el cambio de respuestas para preguntas de opción múltiple y V/F
     const handleAnswerChange = (questionId, selectedOptionId) => {
