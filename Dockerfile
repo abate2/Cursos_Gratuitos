@@ -16,9 +16,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 # Instala Node.js (que incluye npm) desde el repositorio recién añadido.
 RUN apt-get install -y nodejs
 
-# --- INSTALACIÓN EXPLÍCITA DE PIP PARA PYTHON ---
-# Instala python3-pip para asegurar que 'pip' esté disponible para python3.
-RUN apt-get install -y python3-pip
+# --- INSTALACIÓN EXPLÍCITA DE PIP PARA PYTHON Y ENTORNO VIRTUAL ---
+# Instala python3-venv para poder crear entornos virtuales.
+RUN apt-get install -y python3-pip python3-venv
 
 # Copia todos tus archivos del repositorio al contenedor
 COPY . /app
@@ -38,17 +38,22 @@ RUN npm run build
 WORKDIR /app
 
 # --- FASE DE CONSTRUCCIÓN DE DJANGO (Backend) ---
-# Instala las dependencias de Python desde requirements.txt
-RUN python3 -m pip install -r requirements.txt # Ahora 'pip' debería funcionar
+# Crea un entorno virtual de Python llamado 'venv'
+RUN python3 -m venv venv
+
+# Activa el entorno virtual y luego instala las dependencias de Python.
+# Aseguramos que los comandos se ejecuten dentro del entorno virtual.
+RUN . venv/bin/activate && pip install -r requirements.txt # <-- ¡LÍNEAS CORREGIDAS AQUÍ!
 
 # Ejecuta collectstatic para recolectar los archivos estáticos de Django y React.
-# --noinput evita que pida confirmación.
-RUN python manage.py collectstatic --noinput
+# Asegúrate de que este comando también se ejecute dentro del entorno virtual.
+RUN . venv/bin/activate && python manage.py collectstatic --noinput
 
 # Ejecuta las migraciones de la base de datos para configurar el esquema.
-RUN python manage.py migrate
+# Asegúrate de que este comando también se ejecute dentro del entorno virtual.
+RUN . venv/bin/activate && python manage.py migrate
 
 # --- COMANDO DE INICIO DE LA APLICACIÓN ---
 # Define el comando que se ejecutará cuando el contenedor se inicie.
-# Inicia Gunicorn, enlazándolo a todas las interfaces en el puerto que Render asigna ($PORT).
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+# El comando CMD debe activar el entorno virtual para ejecutar gunicorn.
+CMD ["/bin/bash", "-c", ". venv/bin/activate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
