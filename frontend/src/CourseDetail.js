@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'; // Agregamos useCallback
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import './App.css'; // Asegúrate de que los estilos se apliquen
 
 function CourseDetail() {
@@ -53,7 +52,7 @@ function CourseDetail() {
         console.log("Preguntas del quiz cargadas:", data); // Para depuración
       })
       .catch(error => console.error("Error fetching quiz questions:", error));
-  }, [API_BASE_URL]); // Dependencia vacía para que la función no cambie.
+  }, [API_BASE_URL]); // Agregamos API_BASE_URL a las dependencias
 
   const handleLeccionClick = (leccion) => {
     setLeccionActual(leccion);
