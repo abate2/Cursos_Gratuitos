@@ -34,6 +34,10 @@ RUN npm install --legacy-peer-deps
 # Compila la aplicación React para producción.
 RUN npm run build
 
+# ¡NUEVO PASO! Copia el index.html de la aplicación React a STATIC_ROOT para que Whitenoise lo sirva.
+# La carpeta '/app/staticfiles' es tu STATIC_ROOT.
+RUN cp build/index.html /app/staticfiles/index.html
+
 # Vuelve al directorio raíz de la aplicación (donde está manage.py)
 WORKDIR /app
 
@@ -42,18 +46,14 @@ WORKDIR /app
 RUN python3 -m venv venv
 
 # Activa el entorno virtual y luego instala las dependencias de Python.
-# Aseguramos que los comandos se ejecuten dentro del entorno virtual.
-RUN . venv/bin/activate && pip install -r requirements.txt # <-- ¡LÍNEAS CORREGIDAS AQUÍ!
+RUN . venv/bin/activate && pip install -r requirements.txt
 
 # Ejecuta collectstatic para recolectar los archivos estáticos de Django y React.
-# Asegúrate de que este comando también se ejecute dentro del entorno virtual.
 RUN . venv/bin/activate && python manage.py collectstatic --noinput
 
 # Ejecuta las migraciones de la base de datos para configurar el esquema.
-# Asegúrate de que este comando también se ejecute dentro del entorno virtual.
 RUN . venv/bin/activate && python manage.py migrate
 
 # --- COMANDO DE INICIO DE LA APLICACIÓN ---
 # Define el comando que se ejecutará cuando el contenedor se inicie.
-# El comando CMD debe activar el entorno virtual para ejecutar gunicorn.
 CMD ["/bin/bash", "-c", ". venv/bin/activate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
