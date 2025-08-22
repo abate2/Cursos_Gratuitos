@@ -60,7 +60,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages', # ¡Este es el que se requiere!
+                'django.contrib.messages.context_processors.messages', 
             ],
         },
     },
@@ -120,8 +120,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # Se eliminó la referencia a 'BASE_DIR / 'static'' porque no existe esa carpeta en la raíz.
-    BASE_DIR / 'frontend' / 'build' / 'static', # Archivos estáticos de tu frontend React compilado
+    BASE_DIR / 'frontend' / 'build' / 'static', 
 ]
 
 MEDIA_URL = '/media/'
@@ -159,3 +158,15 @@ CSRF_TRUSTED_ORIGINS = [
     # Si tu frontend estuviera en un dominio diferente, también iría aquí:
     # 'https://tu-frontend-react.onrender.com', 
 ]
+
+# --- ¡NUEVAS CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN! ---
+# Estas son cruciales cuando tu aplicación se sirve vía HTTPS (como en Render).
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True # Fuerza todas las solicitudes a HTTPS
+SECURE_HSTS_SECONDS = 31536000 # Configura HSTS para un año
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_BROWSER_XSS_FILTER = True # Protege contra ataques XSS en navegadores más antiguos
+X_FRAME_OPTIONS = 'DENY' # Previene ataques de clickjacking (siempre es buena práctica)
+
