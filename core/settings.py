@@ -53,7 +53,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'staticfiles'], # ¡NUEVO! Añade STATIC_ROOT aquí para encontrar index.html
+        'DIRS': [BASE_DIR / 'staticfiles'], # Añade STATIC_ROOT aquí para encontrar index.html
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -148,7 +148,7 @@ CKEDITOR_CONFIGS = {
 }
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_ALL_ORIGINS = True # Permite peticiones desde cualquier origen (para desarrollo/pruebas)
 
 # Confía en el origen de tu aplicación desplegada en Render para las solicitudes CSRF.
 # Es muy importante que uses la URL real de tu servicio en Render.
@@ -159,18 +159,21 @@ CSRF_TRUSTED_ORIGINS = [
     # 'https://tu-frontend-react.onrender.com', 
 ]
 
-# --- ¡NUEVAS CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN! ---
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True 
-SECURE_HSTS_SECONDS = 31536000 
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SECURE_BROWSER_XSS_FILTER = True 
-X_FRAME_OPTIONS = 'DENY' 
+# --- CONFIGURACIONES DE SEGURIDAD CLAVE PARA PRODUCCIÓN (Render) ---
+CSRF_COOKIE_SECURE = True # Envía la cookie CSRF solo sobre HTTPS
+SESSION_COOKIE_SECURE = True # Envía la cookie de sesión solo sobre HTTPS
+SECURE_SSL_REDIRECT = True # Redirige todas las solicitudes HTTP a HTTPS
+SECURE_HSTS_SECONDS = 31536000 # Configura HSTS (HTTP Strict Transport Security) por un año
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True # Incluye subdominios en HSTS
+SECURE_HSTS_PRELOAD = True # Habilita la precarga de HSTS
+SECURE_BROWSER_XSS_FILTER = True # Protección contra XSS en navegadores antiguos
+X_FRAME_OPTIONS = 'DENY' # Previene clickjacking
 
-# --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
-WHITENOISE_SINGLE_PAGE_APP = True
-
-# --- ¡NUEVA CONFIGURACIÓN CLAVE PARA PROXIES SSL COMO RENDER! ---
+# ¡NUEVA CONFIGURACIÓN CLAVE PARA PROXIES SSL COMO RENDER!
+# Esto le dice a Django que el servidor de Render está actuando como un proxy SSL.
+# Es crucial para que Django genere URLs correctas (HTTPS) y maneje la seguridad de las cookies.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ¡NUEVA CONFIGURACIÓN! Indica a Django que confíe en el encabezado X-Forwarded-Host
+# Esto es necesario para que Django use el host correcto al generar URLs en entornos de proxy.
+USE_X_FORWARDED_HOST = True
