@@ -1,13 +1,20 @@
-# mi-plataforma-cursos/core/urls.py
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView # ¡Importa TemplateView!
 
 urlpatterns = [
     path('admin/', admin.site.urls), # Ruta para el panel de administración de Django
     path('api/', include('cursos.urls')), # Incluye las rutas de tu app 'cursos' bajo '/api/'
-    path('ckeditor/', include('ckeditor_uploader.urls')), # ¡Ruta necesaria para CKEditor!
+    path('ckeditor/', include('ckeditor_uploader.urls')), # Ruta necesaria para CKEditor
+    # --- ¡NUEVA RUTA EXPLÍCITA PARA LA RAÍZ ('/')! ---
+    # Esto servirá el index.html para la ruta raíz, asegurando que se cargue tu SPA.
+    path('', TemplateView.as_view(template_name='index.html'), name='root'), 
+    # --- RUTA CATCH-ALL PARA LA APLICACIÓN REACT (SPA) ---
+    # Esto servirá el index.html de tu frontend React para CUALQUIER otra ruta que no coincida.
+    # ¡Debe ir ABSOLUTAMENTE AL FINAL de urlpatterns!
+    re_path(r'^(?:.*)/?$', TemplateView.as_view(template_name='index.html')),
 ]
 
 # Esto es CRUCIAL para servir archivos de medios (como imágenes subidas con CKEditor)
@@ -16,4 +23,3 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

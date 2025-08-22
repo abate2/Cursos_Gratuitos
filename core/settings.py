@@ -53,7 +53,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'staticfiles'], # ¡NUEVO! Añade STATIC_ROOT aquí para encontrar index.html
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,7 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericLengthValidator',
     },
 ]
 
@@ -160,13 +160,17 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # --- ¡NUEVAS CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN! ---
-# Estas son cruciales cuando tu aplicación se sirve vía HTTPS (como en Render).
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True # Fuerza todas las solicitudes a HTTPS
-SECURE_HSTS_SECONDS = 31536000 # Configura HSTS para un año
+SECURE_SSL_REDIRECT = True 
+SECURE_HSTS_SECONDS = 31536000 
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-SECURE_BROWSER_XSS_FILTER = True # Protege contra ataques XSS en navegadores más antiguos
-X_FRAME_OPTIONS = 'DENY' # Previene ataques de clickjacking (siempre es buena práctica)
+SECURE_BROWSER_XSS_FILTER = True 
+X_FRAME_OPTIONS = 'DENY' 
 
+# --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
+WHITENOISE_SINGLE_PAGE_APP = True
+
+# --- ¡NUEVA CONFIGURACIÓN CLAVE PARA PROXIES SSL COMO RENDER! ---
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
