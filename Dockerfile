@@ -1,6 +1,3 @@
-# Usa una imagen base de Railway/Nixpacks que incluya Python
-# FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
-# CAMBIADO A UNA BASE MÁS GENÉRICA Y LUEGO INSTALAMOS NODE EXPLICITAMENTE
 FROM python:3.10-slim-buster # Una imagen ligera con Python 3.10
 
 # Instala herramientas necesarias para npm (curl, gnupg)
