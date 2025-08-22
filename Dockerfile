@@ -1,24 +1,17 @@
-# Usa una imagen base que incluya Python y utilidades básicas
-FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+# Usa una imagen base de Railway/Nixpacks que incluya Python
+# FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+# CAMBIADO A UNA BASE MÁS GENÉRICA Y LUEGO INSTALAMOS NODE EXPLICITAMENTE
+FROM python:3.10-slim-buster # Una imagen ligera con Python 3.10
+
+# Instala herramientas necesarias para npm (curl, gnupg)
+RUN apt-get update && apt-get install -y curl gnupg && rm -rf /var/lib/apt/lists/*
+
+# Instala Node.js v20 (o superior, ajusta si es necesario)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
 
 # Configura el directorio de trabajo dentro del contenedor
 WORKDIR /app
-
-# --- INSTALACIÓN EXPLÍCITA DE NODE.JS Y NPM ---
-# Actualiza los paquetes del sistema e instala 'curl' y 'gnupg'
-# necesarios para añadir el repositorio de NodeSource.
-RUN apt-get update && apt-get install -y curl gnupg && rm -rf /var/lib/apt/lists/*
-
-# Descarga y ejecuta el script de instalación de NodeSource para Node.js v20 (LTS).
-# Esto añade el repositorio de Node.js a tu sistema.
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-
-# Instala Node.js (que incluye npm) desde el repositorio recién añadido.
-RUN apt-get install -y nodejs
-
-# --- INSTALACIÓN EXPLÍCITA DE PIP PARA PYTHON Y ENTORNO VIRTUAL ---
-# Instala python3-venv para poder crear entornos virtuales.
-RUN apt-get install -y python3-pip python3-venv
 
 # Copia todos tus archivos del repositorio al contenedor
 COPY . /app
@@ -27,33 +20,26 @@ COPY . /app
 # Navega a la carpeta del frontend
 WORKDIR /app/frontend
 
-# Instala las dependencias de Node.js.
-# --legacy-peer-deps puede ser útil para resolver problemas de compatibilidad de versiones.
-RUN npm install --legacy-peer-deps
+# Instala las dependencias de Node.js
+RUN npm install --legacy-peer-deps # Usar --legacy-peer-deps para evitar problemas de dependencias
 
-# Compila la aplicación React para producción.
+# Compila la aplicación React
 RUN npm run build
-
-# ¡NUEVO PASO! Copia el index.html de la aplicación React a STATIC_ROOT para que Whitenoise lo sirva.
-# La carpeta '/app/staticfiles' es tu STATIC_ROOT.
-RUN cp build/index.html /app/staticfiles/index.html
 
 # Vuelve al directorio raíz de la aplicación (donde está manage.py)
 WORKDIR /app
 
 # --- FASE DE CONSTRUCCIÓN DE DJANGO (Backend) ---
-# Crea un entorno virtual de Python llamado 'venv'
-RUN python3 -m venv venv
+# Instala las dependencias de Python desde requirements.txt
+RUN pip install -r requirements.txt
 
-# Activa el entorno virtual y luego instala las dependencias de Python.
-RUN . venv/bin/activate && pip install -r requirements.txt
+# Ejecuta collectstatic para recolectar los archivos estáticos de Django y React
+# --noinput para que no pida confirmación
+RUN python manage.py collectstatic --noinput
 
-# Ejecuta collectstatic para recolectar los archivos estáticos de Django y React.
-RUN . venv/bin/activate && python manage.py collectstatic --noinput
-
-# Ejecuta las migraciones de la base de datos para configurar el esquema.
-RUN . venv/bin/activate && python manage.py migrate
+# Ejecuta las migraciones de la base de datos
+RUN python manage.py migrate
 
 # --- COMANDO DE INICIO DE LA APLICACIÓN ---
-# Define el comando que se ejecutará cuando el contenedor se inicie.
-CMD ["/bin/bash", "-c", ". venv/bin/activate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
+# Define el comando que se ejecutará cuando el contenedor se inicie
+CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:$PORT"]

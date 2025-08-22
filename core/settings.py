@@ -53,14 +53,14 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'staticfiles'], # ¡AÑADE ESTO! Asegura que Django busque templates en STATIC_ROOT
+        'DIRS': [BASE_DIR / 'staticfiles'], # ¡Esta línea es crucial!
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.messages', 
+                'django.contrib.messages.context_processors.messages', # ¡Esta es la línea que falta o está mal!
             ],
         },
     },
@@ -169,13 +169,13 @@ SECURE_HSTS_PRELOAD = True # Habilita la precarga de HSTS
 SECURE_BROWSER_XSS_FILTER = True # Protección contra XSS en navegadores antiguos
 X_FRAME_OPTIONS = 'DENY' # Previene clickjacking
 
-# ¡NUEVA CONFIGURACIÓN CLAVE PARA PROXIES SSL COMO RENDER!
+# ¡CONFIGURACIÓN CLAVE PARA PROXIES SSL COMO RENDER!
 # Esto le dice a Django que el servidor de Render está actuando como un proxy SSL.
 # Es crucial para que Django genere URLs correctas (HTTPS) y maneje la seguridad de las cookies.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# ¡NUEVA CONFIGURACIÓN! Indica a Django que confíe en el encabezado X-Forwarded-Host
+# Indica a Django que confíe en el encabezado X-Forwarded-Host
 # Esto es necesario para que Django use el host correcto al generar URLs en entornos de proxy.
 USE_X_FORWARDED_HOST = True
 # --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
-WHITENOISE_SINGLE_PAGE_APP = True # <-- ¡ASEGÚRATE DE QUE ESTO ESTÉ EN TRUE!
+WHITENOISE_SINGLE_PAGE_APP = True
