@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster # Una imagen ligera con Python 3.10
+FROM python:3.10-slim-buster
 
 # Instala herramientas necesarias para npm (curl, gnupg)
 RUN apt-get update && apt-get install -y curl gnupg && rm -rf /var/lib/apt/lists/*
@@ -18,7 +18,7 @@ COPY . /app
 WORKDIR /app/frontend
 
 # Instala las dependencias de Node.js
-RUN npm install --legacy-peer-deps # Usar --legacy-peer-deps para evitar problemas de dependencias
+RUN npm install --legacy-peer-deps
 
 # Compila la aplicación React
 RUN npm run build
