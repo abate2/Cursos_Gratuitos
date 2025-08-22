@@ -53,7 +53,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'staticfiles'], # Añade STATIC_ROOT aquí para encontrar index.html
+        'DIRS': [BASE_DIR / 'staticfiles'], # ¡AÑADE ESTO! Asegura que Django busque templates en STATIC_ROOT
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -177,3 +177,5 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # ¡NUEVA CONFIGURACIÓN! Indica a Django que confíe en el encabezado X-Forwarded-Host
 # Esto es necesario para que Django use el host correcto al generar URLs en entornos de proxy.
 USE_X_FORWARDED_HOST = True
+# --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
+WHITENOISE_SINGLE_PAGE_APP = True # <-- ¡ASEGÚRATE DE QUE ESTO ESTÉ EN TRUE!
