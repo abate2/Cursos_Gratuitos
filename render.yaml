@@ -1,9 +1,8 @@
-# render.yaml en la raíz de tu repositorio
+# render.yaml en la raíz de tu repositorio (DEBUG=True TEMPORALMENTE)
 services:
   - type: web # Servicio para tu backend Django
     name: mi-plataforma-backend # Nombre de tu servicio backend
     env: python
-    # buildCommand ahora es más explícito y muestra más logs
     buildCommand: |
       echo "--- Iniciando Build Command ---"
       echo "Directorio actual: $(pwd)"
@@ -39,7 +38,7 @@ services:
       - key: WEB_CONCURRENCY
         value: 4
       - key: DEBUG_VALUE
-        value: "False"
+        value: "True" # <-- ¡CAMBIO CLAVE AQUÍ PARA OBTENER EL TRACEBACK!
       - key: ALLOWED_HOSTS
         value: "${RENDER_EXTERNAL_HOSTNAME}"
 
