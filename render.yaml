@@ -1,65 +1,33 @@
-# render.yaml en la raíz de tu repositorio (DEBUG=True TEMPORALMENTE y con Diagnósticos)
+# render.yaml para el despliegue en Render
 services:
   - type: web # Servicio para tu backend Django
-    name: mi-plataforma-backend # Nombre de tu servicio backend
+    name: mi-plataforma-backend # Nombre de tu servicio backend (cámbialo si quieres)
     env: python
     buildCommand: |
-      echo "--- Iniciando Build Command ---"
-      echo "Directorio actual: $(pwd)"
-      ls -la
-      echo "Cambiando a frontend/"
-      cd frontend
-      echo "Directorio frontend: $(pwd)"
-      ls -la
-      echo "Instalando dependencias de Node.js..."
-      npm install --legacy-peer-deps
-      echo "Compilando aplicación React..."
-      npm run build
-      echo "Volviendo al directorio raíz..."
-      cd ../
-      echo "Directorio raíz: $(pwd)"
-      ls -la
-      
-      echo "--- DIAGNÓSTICO: CONTENIDO DE frontend/build ---"
-      ls -la /app/frontend/build # Listar contenido de la carpeta build de React
-      echo "--- DIAGNÓSTICO: CONTENIDO DE index.html EN BUILD ---"
-      cat /app/frontend/build/index.html # Mostrar contenido de index.html
-      echo "--- DIAGNÓSTICO: CONTENIDO DE frontend/build/static ---"
-      ls -la /app/frontend/build/static # Listar contenido de la carpeta static dentro de build
-      echo "--- FIN DIAGNÓSTICO DE BUILD ---"
-      
-      echo "Instalando dependencias de Python..."
+      # Instala dependencias de Python
       pip install -r requirements.txt
-      echo "Recolectando archivos estáticos..."
+      # Navega a la carpeta del frontend y construye la aplicación React
+      cd frontend
+      npm install
+      npm run build
+      cd .. # Regresa a la raíz del proyecto
+      # Recolecta los archivos estáticos de Django y la app React
       python manage.py collectstatic --noinput
-      
-      echo "--- DIAGNÓSTICO: CONTENIDO DE STATIC_ROOT (/app/staticfiles) ---"
-      ls -la /app/staticfiles # Listar contenido de la carpeta STATIC_ROOT
-      echo "--- DIAGNÓSTICO: CONTENIDO DE index.html EN STATIC_ROOT ---"
-      cat /app/staticfiles/index.html # Intentar mostrar contenido de index.html en STATIC_ROOT
-      echo "--- FIN DIAGNÓSTICO DE STATIC_ROOT ---"
-      
-      echo "Ejecutando migraciones de base de datos..."
+      # Ejecuta las migraciones de la base de datos
       python manage.py migrate
-      echo "--- Build Command Finalizado ---"
-    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
-    healthCheckPath: /admin/login/
-    plan: free
-    autoDeploy: true
+    startCommand: gunicorn core.wsgi:application # Comando para iniciar el servidor Django
+    # Ruta al archivo wsgi.py de tu proyecto
+    healthCheckPath: /admin/login/ # Una ruta para que Render sepa que tu app está viva
+    plan: free # Puedes elegir starter o superior si necesitas más recursos
+    autoDeploy: true # Despliega automáticamente cada vez que haya un push a la rama conectada
     envVars:
-      - key: DATABASE_URL
-        fromDatabase: mi-plataforma-cursos-db
-      - key: SECRET_KEY
-        generateValue: true
-      - key: WEB_CONCURRENCY
-        value: 4
-      - key: DEBUG_VALUE
-        value: "True" # <-- DEBE ESTAR EN "True" PARA VER EL TRACEBACK
+      - key: DATABASE_URL # Variable de entorno para la URL de la base de datos
+        fromDatabase: mi-plataforma-cursos-db # Nombre de la base de datos que creaste en Render (¡DEBE COINCIDIR!)
+      - key: SECRET_KEY # Variable de entorno para la clave secreta de Django
+        generateValue: true # Render generará una clave segura automáticamente
+      - key: WEB_CONCURRENCY # Recomendado para Gunicorn
+        value: 4 # Puedes ajustarlo según tu plan
+      - key: DEBUG_VALUE # Setear a False para producción
+        value: "False" # <-- ¡Cambiado a False para despliegue!
       - key: ALLOWED_HOSTS
-        value: "${RENDER_EXTERNAL_HOSTNAME}"
-
-  - type: postgres
-    name: mi-plataforma-cursos-db
-    plan: free
-    databaseName: micursodb
-    user: miusuario
+        value: "${RENDER_EXTERNAL_HOSTNAME}" # Render llenará esto con el dominio público de tu app

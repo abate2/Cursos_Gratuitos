@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import dj_database_url # Importa dj_database_url
-from whitenoise.storage import CompressedManifestStaticFilesStorage # Importa el storage de WhiteNoise
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,8 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-m#+5x=w3z8y9e@&h-m7#b7q-@p+n5n#k4p_z+0y!*q_w_f-d9#') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG será True TEMPORALMENTE para depuración. ¡REVERTIR A 'False' INMEDIATAMENTE DESPUÉS!
-DEBUG = os.environ.get('DEBUG_VALUE', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG_VALUE', 'True') == 'True' # Usa la variable de entorno para DEBUG
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') # Usa la variable de entorno para ALLOWED_HOSTS
+if DEBUG:
+    ALLOWED_HOSTS += ['127.0.0.1', 'localhost'] # Para desarrollo local
 
 
 # Application definition
@@ -36,7 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Middleware de WhiteNoise DEBE IR DESPUÉS de SecurityMiddleware
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.common.CommonMiddleware',
@@ -51,14 +53,14 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [], # ¡CORRECCIÓN CLAVE! Ya no necesitamos esta entrada aquí. WhiteNoise maneja el index.html
-        'APP_DIRS': True, # Esto es esencial para que Django encuentre las plantillas de sus apps (incluido el admin)
+        'DIRS': [],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages', # Necesario para el admin
+                'django.template.context_processors.messages', 
             ],
         },
     },
@@ -98,7 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -106,12 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'es-es' # Puedes cambiarlo a 'es-es' si lo deseas
-
-TIME_ZONE = 'America/Bogota' # O tu zona horaria preferida
-
+LANGUAGE_CODE = 'es-es' 
+TIME_ZONE = 'America/Bogota' 
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -121,20 +120,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # ¡CORRECCIÓN CLAVE! Eliminamos BASE_DIR / 'static' si no existe esa carpeta directamente en la raíz.
-    # Solo incluimos la carpeta 'build' completa para que index.html y sus assets sean recolectados.
+    # ¡CAMBIO CLAVE AQUÍ! Apuntamos al directorio 'build' completo.
     BASE_DIR / 'frontend' / 'build', 
 ]
-
-# Configuración de WhiteNoise para servir archivos estáticos comprimidos y con caché
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-    "default": { # Asegúrate de tener un default si no usas un storage personalizado para medios
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media' 
@@ -160,8 +148,8 @@ CKEDITOR_CONFIGS = {
     },
 }
 
-# CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True # Permite peticiones desde cualquier origen (para desarrollo/pruebas)
+# Configuración de CORS (si estás haciendo peticiones desde React a Django)
+CORS_ALLOW_ALL_ORIGINS = True 
 
 # Confía en el origen de tu aplicación desplegada en Render para las solicitudes CSRF.
 # Es muy importante que uses la URL real de tu servicio en Render.
@@ -170,18 +158,25 @@ CSRF_TRUSTED_ORIGINS = [
     'https://cursos-django-backend.onrender.com',
 ]
 
-# --- CONFIGURACIONES DE SEGURIDAD CLAVE PARA PRODUCCIÓN (Render) ---
-CSRF_COOKIE_SECURE = True 
-SESSION_COOKIE_SECURE = True 
+# --- ¡NUEVAS CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN! ---
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True 
 SECURE_HSTS_SECONDS = 31536000 
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True 
-SECURE_HSTS_PRELOAD = True 
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 SECURE_BROWSER_XSS_FILTER = True 
 X_FRAME_OPTIONS = 'DENY' 
 
-# ¡CONFIGURACIÓN CLAVE PARA PROXIES SSL COMO RENDER!
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
 # --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
-WHITENOISE_SINGLE_PAGE_APP = True # <-- ¡ASEGÚRATE DE QUE ESTO ESTÉ EN TRUE!
+WHITENOISE_SINGLE_PAGE_APP = True
+
+# --- ¡NUEVA CONFIGURACIÓN DE STORAGE PARA WHITENOISE! ---
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
