@@ -61,7 +61,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages', 
+                'django.template.context_processors.messages', 
             ],
         },
     },
@@ -109,9 +109,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'es-es' 
-TIME_ZONE = 'America/Bogota' 
+LANGUAGE_CODE = 'es-es' # Puedes cambiarlo a 'es-es' si lo deseas
+
+TIME_ZONE = 'America/Bogota' # O tu zona horaria preferida
+
 USE_I18N = True
+
 USE_TZ = True
 
 
@@ -121,8 +124,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # Esta ruta es donde se encuentra el STATIC_ROOT de tu frontend React después de la construcción
-    BASE_DIR / 'frontend' / 'build' / 'static',
+    BASE_DIR / 'static',
+    # ¡CAMBIO CLAVE AQUÍ! Incluimos la carpeta 'build' completa para que index.html sea recolectado.
+    BASE_DIR / 'frontend' / 'build', 
 ]
 
 # Configuración de WhiteNoise para servir archivos estáticos comprimidos y con caché
