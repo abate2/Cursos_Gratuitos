@@ -60,7 +60,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.messages', 
+                'django.contrib.messages.context_processors.messages', # <-- ¡Esta línea es CRÍTICA!
             ],
         },
     },
@@ -120,8 +120,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # ¡CAMBIO CLAVE AQUÍ! Apuntamos al directorio 'build' completo.
-    BASE_DIR / 'frontend' / 'build', 
+    BASE_DIR / 'static',
+    BASE_DIR / 'frontend' / 'build' / 'static',
 ]
 
 MEDIA_URL = '/media/'
@@ -148,30 +148,18 @@ CKEDITOR_CONFIGS = {
     },
 }
 
-# Configuración de CORS (si estás haciendo peticiones desde React a Django)
+# CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True 
 
-# Confía en el origen de tu aplicación desplegada en Render para las solicitudes CSRF.
-# Es muy importante que uses la URL real de tu servicio en Render.
-# La URL de tu servicio es: https://cursos-django-backend.onrender.com
+# --- ¡NUEVA CONFIGURACIÓN PARA RENDER! ---
 CSRF_TRUSTED_ORIGINS = [
     'https://cursos-django-backend.onrender.com',
 ]
 
-# --- ¡NUEVAS CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN! ---
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True 
-SECURE_HSTS_SECONDS = 31536000 
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SECURE_BROWSER_XSS_FILTER = True 
-X_FRAME_OPTIONS = 'DENY' 
-
 # --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
 WHITENOISE_SINGLE_PAGE_APP = True
 
-# --- ¡NUEVA CONFIGURACIÓN DE STORAGE PARA WHITENOISE! ---
+# --- CONFIGURACIÓN DE STORAGE PARA WHITENOISE ---
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
