@@ -54,7 +54,7 @@ services:
       - key: WEB_CONCURRENCY
         value: 4
       - key: DEBUG_VALUE
-        value: "True" # Mantenemos en True para cualquier error de Django posterior
+        value: "True" # <-- DEBE ESTAR EN "True" PARA VER EL TRACEBACK
       - key: ALLOWED_HOSTS
         value: "${RENDER_EXTERNAL_HOSTNAME}"
 
