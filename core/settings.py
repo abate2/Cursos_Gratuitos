@@ -54,14 +54,14 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'staticfiles'], # ¡CRUCIAL! Para que Django encuentre index.html si TemplateView lo usa
-        'APP_DIRS': True,
+        'DIRS': [], # ¡CORRECCIÓN CLAVE! Ya no necesitamos esta entrada aquí. WhiteNoise maneja el index.html
+        'APP_DIRS': True, # Esto es esencial para que Django encuentre las plantillas de sus apps (incluido el admin)
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.messages', 
+                'django.contrib.messages.context_processors.messages', # Necesario para el admin
             ],
         },
     },
@@ -124,8 +124,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-    # ¡CAMBIO CLAVE AQUÍ! Incluimos la carpeta 'build' completa para que index.html sea recolectado.
+    # ¡CORRECCIÓN CLAVE! Eliminamos BASE_DIR / 'static' si no existe esa carpeta directamente en la raíz.
+    # Solo incluimos la carpeta 'build' completa para que index.html y sus assets sean recolectados.
     BASE_DIR / 'frontend' / 'build', 
 ]
 
