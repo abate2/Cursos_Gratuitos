@@ -23,6 +23,11 @@ RUN apt-get install -y python3-pip python3-venv
 # Copia todos tus archivos del repositorio al contenedor
 COPY . /app
 
+# --- FORZAR RECONSTRUCCIÓN DE LA CACHÉ PARA DIAGNÓSTICOS ---
+# ¡CAMBIA ESTE VALOR CADA VEZ QUE QUIERAS FORZAR UNA RECONSTRUCCIÓN DE LA CACHÉ!
+# Puedes usar la fecha y hora actuales, por ejemplo: 20250823_2240_v1
+ARG CACHE_BUSTER=20250823_2245_v2
+
 # --- FASE DE CONSTRUCCIÓN DE REACT (Frontend) ---
 # Navega a la carpeta del frontend
 WORKDIR /app/frontend
@@ -34,11 +39,11 @@ RUN npm install --legacy-peer-deps
 RUN npm run build
 
 # --- DIAGNÓSTICO EN FASE DE REACT BUILD ---
-RUN echo "--- DIAGNÓSTICO: CONTENIDO DE frontend/build ---" && \
+RUN echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE frontend/build ---" && \
     ls -la /app/frontend/build && \
-    echo "--- DIAGNÓSTICO: CONTENIDO DE index.html EN BUILD ---" && \
+    echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE index.html EN BUILD ---" && \
     cat /app/frontend/build/index.html && \
-    echo "--- DIAGNÓSTICO: CONTENIDO DE frontend/build/static ---" && \
+    echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE frontend/build/static ---" && \
     ls -la /app/frontend/build/static && \
     echo "--- FIN DIAGNÓSTICO DE BUILD DE FRONTEND ---"
 
@@ -56,9 +61,9 @@ RUN . venv/bin/activate && pip install -r requirements.txt
 RUN . venv/bin/activate && python manage.py collectstatic --noinput
 
 # --- DIAGNÓSTICO EN FASE DE COLLECTSTATIC ---
-RUN echo "--- DIAGNÓSTICO: CONTENIDO DE STATIC_ROOT (/app/staticfiles) ---" && \
+RUN echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE STATIC_ROOT (/app/staticfiles) ---" && \
     ls -la /app/staticfiles && \
-    echo "--- DIAGNÓSTICO: CONTENIDO DE index.html EN STATIC_ROOT ---" && \
+    echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE index.html EN STATIC_ROOT ---" && \
     cat /app/staticfiles/index.html && \
     echo "--- FIN DIAGNÓSTICO DE COLLECTSTATIC ---"
 
