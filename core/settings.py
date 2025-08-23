@@ -60,7 +60,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages', # <-- ¡Esta línea es CRÍTICA!
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -120,8 +120,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-    BASE_DIR / 'frontend' / 'build' / 'static',
+    # Si la carpeta 'static' en la raíz de tu proyecto no existe, puedes quitar esta línea.
+    # BASE_DIR / 'static', 
+    BASE_DIR / 'frontend' / 'build', # <-- ¡AHORA INCLUYE EL DIRECTORIO 'build' DIRECTAMENTE!
+    BASE_DIR / 'frontend' / 'build' / 'static', # Esta línea sigue siendo necesaria para otros archivos estáticos de React
 ]
 
 MEDIA_URL = '/media/'
@@ -152,6 +154,9 @@ CKEDITOR_CONFIGS = {
 CORS_ALLOW_ALL_ORIGINS = True 
 
 # --- ¡NUEVA CONFIGURACIÓN PARA RENDER! ---
+# Confía en el origen de tu aplicación desplegada en Render para las solicitudes CSRF.
+# Es muy importante que uses la URL real de tu servicio en Render.
+# La URL de tu servicio es: https://cursos-django-backend.onrender.com
 CSRF_TRUSTED_ORIGINS = [
     'https://cursos-django-backend.onrender.com',
 ]
