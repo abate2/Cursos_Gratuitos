@@ -6,7 +6,7 @@ from django.views.generic import TemplateView # ¡Asegúrate de importar Templat
 
 urlpatterns = [
     # Rutas de administración y API de Django
-    path('admin/', admin.site.urls), # Ruta para el panel de administración de Django
+    path('admin/', admin.site.urls), 
     path('api/', include('cursos.urls')), # Incluye las rutas de tu app 'cursos' bajo '/api/'
     path('ckeditor/', include('ckeditor_uploader.urls')), # Ruta necesaria para CKEditor
 
@@ -27,4 +27,3 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

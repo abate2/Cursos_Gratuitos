@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import dj_database_url # Importa dj_database_url
+from whitenoise.storage import CompressedManifestStaticFilesStorage # Importa el storage de WhiteNoise
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', 
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Middleware de WhiteNoise DEBE IR DESPUÉS de SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.common.CommonMiddleware',
@@ -53,14 +54,14 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'staticfiles'], # ¡Esta línea es crucial!
+        'DIRS': [BASE_DIR / 'staticfiles'], # ¡CRUCIAL! Para que Django encuentre index.html si TemplateView lo usa
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages', # ¡Esta es la línea que falta o está mal!
+                'django.contrib.messages.context_processors.messages', 
             ],
         },
     },
@@ -120,8 +121,19 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    BASE_DIR / 'frontend' / 'build' / 'static', 
+    # Esta ruta es donde se encuentra el STATIC_ROOT de tu frontend React después de la construcción
+    BASE_DIR / 'frontend' / 'build' / 'static',
 ]
+
+# Configuración de WhiteNoise para servir archivos estáticos comprimidos y con caché
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+    "default": { # Asegúrate de tener un default si no usas un storage personalizado para medios
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media' 
@@ -155,27 +167,20 @@ CORS_ALLOW_ALL_ORIGINS = True # Permite peticiones desde cualquier origen (para 
 # La URL de tu servicio es: https://cursos-django-backend.onrender.com
 CSRF_TRUSTED_ORIGINS = [
     'https://cursos-django-backend.onrender.com',
-    # Si tu frontend estuviera en un dominio diferente, también iría aquí:
-    # 'https://tu-frontend-react.onrender.com', 
 ]
 
 # --- CONFIGURACIONES DE SEGURIDAD CLAVE PARA PRODUCCIÓN (Render) ---
-CSRF_COOKIE_SECURE = True # Envía la cookie CSRF solo sobre HTTPS
-SESSION_COOKIE_SECURE = True # Envía la cookie de sesión solo sobre HTTPS
-SECURE_SSL_REDIRECT = True # Redirige todas las solicitudes HTTP a HTTPS
-SECURE_HSTS_SECONDS = 31536000 # Configura HSTS (HTTP Strict Transport Security) por un año
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True # Incluye subdominios en HSTS
-SECURE_HSTS_PRELOAD = True # Habilita la precarga de HSTS
-SECURE_BROWSER_XSS_FILTER = True # Protección contra XSS en navegadores antiguos
-X_FRAME_OPTIONS = 'DENY' # Previene clickjacking
+CSRF_COOKIE_SECURE = True 
+SESSION_COOKIE_SECURE = True 
+SECURE_SSL_REDIRECT = True 
+SECURE_HSTS_SECONDS = 31536000 
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True 
+SECURE_HSTS_PRELOAD = True 
+SECURE_BROWSER_XSS_FILTER = True 
+X_FRAME_OPTIONS = 'DENY' 
 
 # ¡CONFIGURACIÓN CLAVE PARA PROXIES SSL COMO RENDER!
-# Esto le dice a Django que el servidor de Render está actuando como un proxy SSL.
-# Es crucial para que Django genere URLs correctas (HTTPS) y maneje la seguridad de las cookies.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# Indica a Django que confíe en el encabezado X-Forwarded-Host
-# Esto es necesario para que Django use el host correcto al generar URLs en entornos de proxy.
 USE_X_FORWARDED_HOST = True
 # --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
-WHITENOISE_SINGLE_PAGE_APP = True
+WHITENOISE_SINGLE_PAGE_APP = True # <-- ¡ASEGÚRATE DE QUE ESTO ESTÉ EN TRUE!
