@@ -120,10 +120,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # ¡IMPORTANTE! Hemos eliminado la línea `BASE_DIR / 'static'`
-    # si la carpeta 'static' en la raíz de tu proyecto no existe.
-    BASE_DIR / 'frontend' / 'build', # ¡AHORA INCLUYE EL DIRECTORIO 'build' DIRECTAMENTE!
-    BASE_DIR / 'frontend' / 'build' / 'static', # Esta línea sigue siendo necesaria para otros archivos estáticos de React
+    # ¡ÚLTIMO INTENTO CON STATICFILES_DIRS SIMPLIFICADO!
+    # Esto debería copiar index.html directamente a STATIC_ROOT
+    # y los contenidos de frontend/build/static a staticfiles/static.
+    BASE_DIR / 'frontend' / 'build', 
 ]
 
 MEDIA_URL = '/media/'
@@ -153,10 +153,7 @@ CKEDITOR_CONFIGS = {
 # CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True 
 
-# --- ¡NUEVA CONFIGURACIÓN PARA RENDER! ---
-# Confía en el origen de tu aplicación desplegada en Render para las solicitudes CSRF.
-# Es muy importante que uses la URL real de tu servicio en Render.
-# La URL de tu servicio es: https://cursos-django-backend.onrender.com
+# --- CONFIGURACIÓN PARA RENDER ---
 CSRF_TRUSTED_ORIGINS = [
     'https://cursos-django-backend.onrender.com',
 ]
