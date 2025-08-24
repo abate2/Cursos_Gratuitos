@@ -1,33 +1,39 @@
-# render.yaml para el despliegue en Render
+# render.yaml en la raíz de tu repositorio
 services:
   - type: web # Servicio para tu backend Django
-    name: mi-plataforma-backend # Nombre de tu servicio backend (cámbialo si quieres)
+    name: mi-plataforma-backend # Nombre de tu servicio backend
     env: python
+    # buildCommand ahora es más explícito y solo para Django
     buildCommand: |
-      # Instala dependencias de Python
-      pip install -r requirements.txt
-      # Navega a la carpeta del frontend y construye la aplicación React
-      cd frontend
-      npm install
-      npm run build
-      cd .. # Regresa a la raíz del proyecto
-      # Recolecta los archivos estáticos de Django y la app React
-      python manage.py collectstatic --noinput
-      # Ejecuta las migraciones de la base de datos
-      python manage.py migrate
-    startCommand: gunicorn core.wsgi:application # Comando para iniciar el servidor Django
-    # Ruta al archivo wsgi.py de tu proyecto
-    healthCheckPath: /admin/login/ # Una ruta para que Render sepa que tu app está viva
-    plan: free # Puedes elegir starter o superior si necesitas más recursos
-    autoDeploy: true # Despliega automáticamente cada vez que haya un push a la rama conectada
+      echo "--- Iniciando Build Command (Django Only) ---"
+      echo "Directorio actual: $(pwd)"
+      ls -la
+      echo "Instalando dependencias de Python..."
+      python3 -m venv venv # Crea el entorno virtual
+      . venv/bin/activate && pip install -r requirements.txt # Instala dependencias
+      echo "Recolectando archivos estáticos de Django..."
+      . venv/bin/activate && python manage.py collectstatic --noinput
+      echo "Ejecutando migraciones de base de datos..."
+      . venv/bin/activate && python manage.py migrate
+      echo "--- Build Command Finalizado (Django Only) ---"
+    startCommand: /bin/bash -c ". venv/bin/activate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT" # Comando para iniciar el servidor Django
+    healthCheckPath: /admin/login/
+    plan: free
+    autoDeploy: true
     envVars:
-      - key: DATABASE_URL # Variable de entorno para la URL de la base de datos
-        fromDatabase: mi-plataforma-cursos-db # Nombre de la base de datos que creaste en Render (¡DEBE COINCIDIR!)
-      - key: SECRET_KEY # Variable de entorno para la clave secreta de Django
-        generateValue: true # Render generará una clave segura automáticamente
-      - key: WEB_CONCURRENCY # Recomendado para Gunicorn
-        value: 4 # Puedes ajustarlo según tu plan
-      - key: DEBUG_VALUE # Setear a False para producción
-        value: "False" # <-- ¡Cambiado a False para despliegue!
+      - key: DATABASE_URL
+        fromDatabase: mi-plataforma-cursos-db # ¡DEBE COINCIDIR con el nombre de tu base de datos en Render!
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: DEBUG_VALUE
+        value: "False"
       - key: ALLOWED_HOSTS
-        value: "${RENDER_EXTERNAL_HOSTNAME}" # Render llenará esto con el dominio público de tu app
+        value: "${RENDER_EXTERNAL_HOSTNAME}"
+
+  - type: postgres # Servicio de base de datos
+    name: mi-plataforma-cursos-db # Nombre de la base de datos (¡DEBE COINCIDIR con fromDatabase arriba!)
+    plan: free
+    databaseName: micursodb # Nombre de la base de datos interna
+    user: miusuario # Usuario de la base de datos

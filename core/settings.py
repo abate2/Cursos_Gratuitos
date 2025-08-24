@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-import dj_database_url # Importa dj_database_url
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,11 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-m#+5x=w3z8y9e@&h-m7#b7q-@p+n5n#k4p_z+0y!*q_w_f-d9#') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG_VALUE', 'True') == 'True' # Usa la variable de entorno para DEBUG
+DEBUG = os.environ.get('DEBUG_VALUE', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') # Usa la variable de entorno para ALLOWED_HOSTS
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 if DEBUG:
-    ALLOWED_HOSTS += ['127.0.0.1', 'localhost'] # Para desarrollo local
+    ALLOWED_HOSTS += ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -70,8 +70,6 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -79,16 +77,12 @@ DATABASES = {
     }
 }
 
-# La variable de entorno DATABASE_URL será establecida por Render.
-# Si existe, la usamos; de lo contrario, usamos SQLite local.
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     DATABASES['default'] = dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -106,8 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'es-es' 
 TIME_ZONE = 'America/Bogota' 
 USE_I18N = True
@@ -115,15 +107,13 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # ¡ÚLTIMO INTENTO CON STATICFILES_DIRS SIMPLIFICADO!
-    # Esto debería copiar index.html directamente a STATIC_ROOT
-    # y los contenidos de frontend/build/static a staticfiles/static.
-    BASE_DIR / 'frontend' / 'build', 
+    # En el despliegue separado, Django ya no servirá los estáticos de React
+    # Solo necesitamos las carpetas 'static' que Django recolecta (ej. para el admin)
+    # Si tienes una carpeta 'static' directamente en la raíz de tu proyecto para Django:
+    # BASE_DIR / 'static', 
 ]
 
 MEDIA_URL = '/media/'
@@ -131,8 +121,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración de CKEditor
@@ -151,15 +139,25 @@ CKEDITOR_CONFIGS = {
 }
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_ALL_ORIGINS = True # Esto es temporal para que el frontend pueda acceder.
+# Una vez desplegado el frontend, DEBES cambiar esto a CORS_ALLOWED_ORIGINS 
+# y listar la URL de tu frontend (ej. 'https://tu-frontend.vercel.app').
+# Ejemplo:
+# CORS_ALLOWED_ORIGINS = [
+#     'https://tu-frontend-vercel-url.vercel.app',
+#     'https://cursos-django-backend.onrender.com', # Si tu backend también hace peticiones a sí mismo
+# ]
+
 
 # --- CONFIGURACIÓN PARA RENDER ---
 CSRF_TRUSTED_ORIGINS = [
     'https://cursos-django-backend.onrender.com',
+    # ¡IMPORTANTE! Una vez que despliegues tu frontend, DEBES añadir su URL aquí.
+    # Ejemplo: 'https://tu-frontend-vercel-url.vercel.app',
 ]
 
-# --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP ---
-WHITENOISE_SINGLE_PAGE_APP = True
+# --- CONFIGURACIÓN DE WHITENOISE PARA SINGLE PAGE APP (AHORA DESACTIVADA) ---
+WHITENOISE_SINGLE_PAGE_APP = False # <-- ¡CAMBIO CLAVE: DESACTIVADO!
 
 # --- CONFIGURACIÓN DE STORAGE PARA WHITENOISE ---
 STORAGES = {
