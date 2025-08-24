@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-import dj_database_url
+import dj_database_url # Importa dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,6 +16,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-m#+5x=w3z8y9e@&h-m7#b
 DEBUG = os.environ.get('DEBUG_VALUE', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+# RENDER_EXTERNAL_HOSTNAME se añade automáticamente a ALLOWED_HOSTS en Render
+# Por seguridad, no añadimos 'localhost' ni '127.0.0.1' si DEBUG es False
 if DEBUG:
     ALLOWED_HOSTS += ['127.0.0.1', 'localhost']
 
@@ -110,10 +112,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # En el despliegue separado, Django ya no servirá los estáticos de React
-    # Solo necesitamos las carpetas 'static' que Django recolecta (ej. para el admin)
-    # Si tienes una carpeta 'static' directamente en la raíz de tu proyecto para Django:
-    # BASE_DIR / 'static', 
+    # ¡IMPORTANTE! Para el despliegue de backend solamente, esta lista puede estar vacía
+    # o solo contener directorios de 'static' de apps de Django si las tienes.
+    # NO debe apuntar a la carpeta 'build' del frontend.
 ]
 
 MEDIA_URL = '/media/'
@@ -139,13 +140,12 @@ CKEDITOR_CONFIGS = {
 }
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True # Esto es temporal para que el frontend pueda acceder.
-# Una vez desplegado el frontend, DEBES cambiar esto a CORS_ALLOWED_ORIGINS 
-# y listar la URL de tu frontend (ej. 'https://tu-frontend.vercel.app').
-# Ejemplo:
+# CORS_ALLOW_ALL_ORIGINS = True es bueno para desarrollo, pero en producción es mejor ser específico.
+# Una vez que tu frontend esté desplegado en Vercel/Netlify, DESCOMENTA y usa CORS_ALLOWED_ORIGINS
+# con la URL de tu frontend.
+CORS_ALLOW_ALL_ORIGINS = True # <-- Temporalmente amplio para que el backend funcione.
 # CORS_ALLOWED_ORIGINS = [
-#     'https://tu-frontend-vercel-url.vercel.app',
-#     'https://cursos-django-backend.onrender.com', # Si tu backend también hace peticiones a sí mismo
+#     'https://tu-frontend-vercel-url.vercel.app', # Cuando tengas la URL de tu frontend
 # ]
 
 
