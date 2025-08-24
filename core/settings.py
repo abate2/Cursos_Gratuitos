@@ -120,9 +120,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATICFILES_DIRS = [
-    # Si la carpeta 'static' en la raíz de tu proyecto no existe, puedes quitar esta línea.
-    # BASE_DIR / 'static', 
-    BASE_DIR / 'frontend' / 'build', # <-- ¡AHORA INCLUYE EL DIRECTORIO 'build' DIRECTAMENTE!
+    # ¡IMPORTANTE! Hemos eliminado la línea `BASE_DIR / 'static'`
+    # si la carpeta 'static' en la raíz de tu proyecto no existe.
+    BASE_DIR / 'frontend' / 'build', # ¡AHORA INCLUYE EL DIRECTORIO 'build' DIRECTAMENTE!
     BASE_DIR / 'frontend' / 'build' / 'static', # Esta línea sigue siendo necesaria para otros archivos estáticos de React
 ]
 

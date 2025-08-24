@@ -25,8 +25,8 @@ COPY . /app
 
 # --- FORZAR RECONSTRUCCIÓN DE LA CACHÉ PARA DIAGNÓSTICOS ---
 # ¡CAMBIA ESTE VALOR CADA VEZ QUE QUIERAS FORZAR UNA RECONSTRUCCIÓN DE LA CACHÉ!
-# Puedes usar la fecha y hora actuales, por ejemplo: 20250823_2240_v1
-ARG CACHE_BUSTER=20250823_2245_v2
+# Puedes usar la fecha y hora actuales, por ejemplo: 20250824_0005_v1
+ARG CACHE_BUSTER=20250824_0005_v1 
 
 # --- FASE DE CONSTRUCCIÓN DE REACT (Frontend) ---
 # Navega a la carpeta del frontend
@@ -38,13 +38,9 @@ RUN npm install --legacy-peer-deps
 # Compila la aplicación React para producción.
 RUN npm run build
 
-# --- DIAGNÓSTICO EN FASE DE REACT BUILD ---
+# --- DIAGNÓSTICO EN FASE DE REACT BUILD (solo para referencia) ---
 RUN echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE frontend/build ---" && \
     ls -la /app/frontend/build && \
-    echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE index.html EN BUILD ---" && \
-    cat /app/frontend/build/index.html && \
-    echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE frontend/build/static ---" && \
-    ls -la /app/frontend/build/static && \
     echo "--- FIN DIAGNÓSTICO DE BUILD DE FRONTEND ---"
 
 # Vuelve al directorio raíz de la aplicación (donde está manage.py)
@@ -60,12 +56,10 @@ RUN . venv/bin/activate && pip install -r requirements.txt
 # Ejecuta collectstatic para recolectar los archivos estáticos de Django y React.
 RUN . venv/bin/activate && python manage.py collectstatic --noinput
 
-# --- DIAGNÓSTICO EN FASE DE COLLECTSTATIC ---
-RUN echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE STATIC_ROOT (/app/staticfiles) ---" && \
-    ls -la /app/staticfiles && \
-    echo "--- INICIO DIAGNÓSTICO: CONTENIDO DE index.html EN STATIC_ROOT ---" && \
-    cat /app/staticfiles/index.html && \
-    echo "--- FIN DIAGNÓSTICO DE COLLECTSTATIC ---"
+# --- DIAGNÓSTICO ESPECÍFICO DE index.html EN STATIC_ROOT ---
+RUN echo "--- INICIO DIAGNÓSTICO: BUSCANDO index.html EN STATIC_ROOT (/app/staticfiles) ---" && \
+    ls -la /app/staticfiles/index* && \
+    echo "--- FIN DIAGNÓSTICO DE index.html EN STATIC_ROOT ---"
 
 # Ejecuta las migraciones de la base de datos para configurar el esquema.
 RUN . venv/bin/activate && python manage.py migrate
