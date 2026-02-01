@@ -1,0 +1,16 @@
+# Archivos de Python
+*.pyc
+__pycache__/
+
+# Entorno Virtual
+venv/
+
+# Archivos de Django
+db.sqlite3
+/media/
+
+# Archivos de Node
+node_modules/
+
+# Archivos de configuración y secretos
+.env
