@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom'; // <-- ¡Importa Link!
 import Flashcard from './Flashcard';
+import API_BASE_URL from './config';
 import './App.css'; // Asegúrate de que los estilos se apliquen
 
 function MemoryGame() {
@@ -13,7 +14,7 @@ function MemoryGame() {
 
   const fetchRawFlashcards = useCallback(() => {
     setLoading(true);
-    fetch(`http://127.0.0.1:8000/api/flashcards/`) 
+    fetch(`${API_BASE_URL}/api/flashcards/`) 
       .then(response => response.json())
       .then(data => {
         setAllRawFlashcards(data); 

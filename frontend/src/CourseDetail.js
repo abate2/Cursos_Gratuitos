@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'; // Agregamos useCallback
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import API_BASE_URL from './config';
 import './App.css'; // Asegúrate de que los estilos se apliquen
 
 function CourseDetail() {
@@ -17,7 +18,7 @@ function CourseDetail() {
   const [quizStarted, setQuizStarted] = useState(false); // Para controlar si el quiz ha iniciado
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/cursos/${id}/`)
+    fetch(`${API_BASE_URL}/api/cursos/${id}/`)
       .then(response => response.json())
       .then(data => {
         setCurso(data);
@@ -30,7 +31,7 @@ function CourseDetail() {
 
   // Función para obtener las preguntas del quiz de la API
   const fetchQuizQuestions = useCallback((leccionId) => {
-    fetch(`http://127.0.0.1:8000/api/lecciones/${leccionId}/quiz_questions/`)
+    fetch(`${API_BASE_URL}/api/lecciones/${leccionId}/quiz_questions/`)
       .then(response => response.json())
       .then(data => {
         setQuizQuestions(data);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import API_BASE_URL from './config';
 // Asegúrate de importar CourseCard si lo tienes en un archivo separado
 // import CourseCard from './CourseCard'; 
 import './App.css'; 
@@ -9,7 +10,7 @@ function CourseList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/cursos/')
+    fetch(`${API_BASE_URL}/api/cursos/`)
       .then(response => response.json())
       .then(data => {
         setCursos(data);
