@@ -39,7 +39,7 @@ function CourseDetail() {
       // Llama a la función para cargar las preguntas del quiz de la nueva lección
       fetchQuizQuestions(leccionActual.id); 
     }
-  }, [leccionActual]);
+  }, [leccionActual, fetchQuizQuestions]);
 
   // Función para obtener las preguntas del quiz de la API
   const fetchQuizQuestions = useCallback((leccionId) => {
