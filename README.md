@@ -1,34 +1,40 @@
-# 📚 Cursos Gratuitos - Plataforma de Aprendizaje
+# 📚 Apuntes Interactivos - Tu Plataforma de Repaso Digital
 
-Una plataforma full-stack para crear y gestionar cursos online con lecciones interactivas, cuestionarios y juegos de memoria.
+Una plataforma intuitiva para guardar, organizar y repasar tus apuntes de estudio con herramientas interactivas. Convierte tus notas en sesiones de repaso dinámicas con cuestionarios y juegos de memoria para aprender mejor.
 
-## 🎯 Características
+## 🎯 ¿Para qué sirve?
 
-- ✅ **Dashboard Admin**: Crear cursos, lecciones y cuestionarios
-- ✅ **Frontend Responsivo**: Interfaz con React
-- ✅ **API REST**: Construida con Django Rest Framework
-- ✅ **Base de Datos**: PostgreSQL en producción
-- ✅ **Editor Rich-Text**: CKEditor para contenido de lecciones
-- ✅ **Cuestionarios Interactivos**: Mini-quiz por lección
-- ✅ **Juego de Memoria**: Actividad complementaria
-- ✅ **Despliegue en la Nube**: Preparado para Render
+- 📝 **Guardar Apuntes**: Crea temas con notas detalladas en editor rico
+- ✅ **Cuestionarios de Repaso**: Genera preguntas automáticas sobre tu contenido
+- 🎮 **Juegos de Memoria**: Práctica interactiva con flashcards
+- 📱 **Acceso Desde Cualquier Lugar**: Tu plataforma en la nube, siempre disponible
+- 🎨 **Interfaz Limpia**: Enfocada en el estudio, sin distracciones
+
+**Ideal para**: Estudiantes, profesionales en formación, autodidactas que quieren organizar su conocimiento de forma interactiva.
+
+## 💡 Casos de Uso
+
+- 🎓 Estudiantes preparando exámenes
+- 👨‍💼 Profesionales aprendiendo nuevas habilidades
+- 🏫 Docentes creando material de repaso para estudiantes
+- 📚 Personas estudiando idiomas o nuevos temas
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Django 5.2** - Framework web
-- **Django Rest Framework** - API REST
-- **PostgreSQL** - Base de datos
-- **Gunicorn** - Servidor WSGI
+- **Django 5.2** - Framework web robusto
+- **Django Rest Framework** - API REST para sincronizar datos
+- **PostgreSQL** - Base de datos en la nube
+- **Gunicorn** - Servidor WSGI optimizado
 
 ### Frontend
-- **React 18** - UI
-- **React Router** - Navegación
-- **CSS3** - Estilos
+- **React 18** - Interfaz rápida y responsiva
+- **React Router** - Navegación fluida
+- **CSS3** - Diseño limpio enfocado en lectura
 
 ### DevOps
-- **Render** - Hosting cloud
-- **WhiteNoise** - Servir archivos estáticos
+- **Render** - Hosting en la nube (gratis)
+- **WhiteNoise** - Servir contenido estático
 - **GitHub** - Control de versiones
 
 ## 🚀 Inicio Rápido
@@ -92,25 +98,26 @@ Para desplegar la aplicación en la nube (gratis), sigue la guía completa:
 
 ```
 ├── core/                    # Configuración Django
-│   ├── settings.py         # Config principal
-│   ├── urls.py             # Rutas
-│   └── wsgi.py             # Entrypoint
-├── cursos/                  # App principal
-│   ├── models.py           # Modelos (Curso, Lección, etc)
-│   ├── serializers.py      # Serializadores API
-│   ├── views.py            # Vistas REST
-│   └── urls.py             # Rutas API
-├── frontend/               # React app
+│   ├── settings.py         # Config principal y seguridad
+│   ├── urls.py             # Rutas (admin, api, frontend)
+│   └── wsgi.py             # Entrypoint Gunicorn
+├── cursos/                  # App principal (Temas de estudio)
+│   ├── models.py           # Tema, Lección, Preguntas, Flashcards
+│   ├── serializers.py      # Convertir datos a JSON
+│   ├── views.py            # Lógica de API REST
+│   └── urls.py             # Rutas de API
+├── frontend/               # React - Interfaz de usuario
 │   ├── public/
 │   └── src/
 │       ├── App.js          # Componente principal
-│       ├── CourseList.js   # Listado de cursos
-│       ├── CourseDetail.js # Detalle del curso
-│       └── ...
-├── build.sh                # Script de construcción
+│       ├── CourseList.js   # Listado de temas
+│       ├── CourseDetail.js # Detalle y repaso del tema
+│       ├── MemoryGame.js   # Juego de memoria
+│       └── config.js       # Config de API
+├── build.sh                # Script auto-deploy
 ├── requirements.txt        # Dependencias Python
 ├── manage.py               # CLI Django
-└── DESPLIEGUE_RENDER.md    # Guía de despliegue
+└── DESPLIEGUE_RENDER.md    # Guía paso a paso
 ```
 
 ---
@@ -126,17 +133,17 @@ Para desplegar la aplicación en la nube (gratis), sigue la guía completa:
 Ver [DESPLIEGUE_RENDER.md](./DESPLIEGUE_RENDER.md) para más detalles de seguridad.
 
 ---
+ Principales
 
-## 📖 API Endpoints
+### Temas de Estudio
+- `GET /api/cursos/` - Listar todos tus temas
+- `GET /api/cursos/{id}/` - Ver tema con lecciones
 
-### Cursos
-- `GET /api/cursos/` - Listar cursos
-- `GET /api/cursos/{id}/` - Detalle del curso
-
-### Lecciones
-- `GET /api/lecciones/{id}/quiz_questions/` - Preguntas del quiz
+### Lecciones (Apuntes)
+- `GET /api/lecciones/{id}/quiz_questions/` - Preguntas de repaso
 
 ### Flashcards (Juego de Memoria)
+- `GET /api/flashcards/` - Obtener tarjetas para practicar
 - `GET /api/flashcards/` - Obtener todas las tarjetas
 
 ---
@@ -168,13 +175,15 @@ Este proyecto está bajo licencia [MIT](./LICENSE)
 
 ## 🎓 Próximas Mejoras
 
-- [ ] Autenticación de usuarios
-- [ ] Certificados al completar curso
-- [ ] Sistema de puntuación
-- [ ] Comentarios en lecciones
+- [ ] Autenticación de usuarios (tus apuntes privados)
+- [ ] Exportar apuntes a PDF
+- [ ] Sistema de etiquetas y búsqueda avanzada
+- [ ] Estadísticas de repaso (cuánto estudiaste)
+- [ ] Compartir apuntes con compañeros
 - [ ] Integración con Cloudinary para imágenes
-- [ ] Tests automatizados
+- [ ] Sincronización offline
+- [ ] Modo oscuro
 
----
+---estudiar mejor y recordar más
 
 **Hecho con ❤️ para facilitar el aprendizaje en línea**

@@ -1,6 +1,16 @@
-# Guía de Despliegue en Render - Cursos Gratuitos
+# Guía de Despliegue en Render - Apuntes Interactivos
 
-Esta guía te ayudará a desplegar la aplicación Django + React en Render de forma segura y funcional.
+Esta guía te ayudará a desplegar tu plataforma personal de apuntes interactivos en Render de forma segura y gratuita.
+
+## ¿Qué es esto?
+
+Es tu propia plataforma para guardar, organizar y repasar apuntes con herramientas interactivas:
+- 📝 Crea temas y lecciones con tus notas
+- ✅ Genera cuestionarios de repaso automáticos
+- 🎮 Practica con juegos de memoria
+- 📱 Accede desde cualquier dispositivo, en cualquier momento
+
+¡Totalmente gratis y desplegado en la nube!
 
 ## 📋 Requisitos Previos
 
@@ -52,8 +62,8 @@ git push origin main  # o tu rama principal
 1. Ve a [https://dashboard.render.com/](https://dashboard.render.com/)
 2. Click en **"New +"** → **"PostgreSQL"**
 3. Configura:
-   - **Name**: `cursos-db` (o el nombre que prefieras)
-   - **Database**: `cursos`
+   - **Name**: `apuntes-db` (o el nombre que prefieras)
+   - **Database**: `apuntes`
    - **Region**: Elige la más cercana a ti
    - **Plan**: `Free` (incluye 90 días gratis)
 4. Click en **"Create Database"**
@@ -66,7 +76,7 @@ git push origin main  # o tu rama principal
 1. Click en **"New +"** → **"Web Service"**
 2. Conecta tu repositorio de GitHub
 3. Configura:
-   - **Name**: `cursos-backend` (o similar)
+   - **Name**: `mis-apuntes-backend` (o similar)
    - **Region**: Misma región que la BD
    - **Branch**: `main` (o tu rama principal)
    - **Root Directory**: Dejar vacío
@@ -101,9 +111,10 @@ git push origin main  # o tu rama principal
 ## ✅ Paso 4: Verificar el Despliegue
 
 1. Una vez finalizado, tu app estará en: `https://tu-dominio.onrender.com`
-2. Accede a `/admin/` para verificar que Django funciona
+2. Accede a `/admin/` para ingresar al panel de control
 3. Login con las credenciales de superusuario que creaste
-4. Verifica que los cursos se muestren en la página principal
+4. Crea tu primer tema de estudio con lecciones y preguntas de repaso
+5. Vuelve a la página principal y comienza a estudiar
 
 ---
 
