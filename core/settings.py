@@ -173,10 +173,9 @@ CKEDITOR_CONFIGS = {
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = os.environ.get(
-        'CORS_ALLOWED_ORIGINS',
-        ''
-    ).split(',')
+    # Filtra strings vacíos para evitar errores de validación
+    cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins if origin.strip()]
 
 CORS_ALLOW_CREDENTIALS = True
 
