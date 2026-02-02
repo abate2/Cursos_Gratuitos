@@ -18,3 +18,8 @@ python manage.py collectstatic --no-input
 
 # Aplicar migraciones de base de datos
 python manage.py migrate
+
+# Crear superusuario automáticamente si DJANGO_SUPERUSER_USERNAME está definido
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ]; then
+  python manage.py createsuperuser --noinput || true
+fi
