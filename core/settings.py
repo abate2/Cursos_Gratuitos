@@ -1,27 +1,26 @@
-# mi-plataforma-cursos/core/settings.py
+"""
+Configuración de Django para el proyecto core.
+Generado por 'django-admin startproject' usando Django 6.0.1.
+"""
 
+from pathlib import Path
 import os
 import dj_database_url
-from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m#+5x=w3z8y9e@&h-m7#b7q-@p+n5n#k4p_z+0y!*q_w_f-d9#' # ¡CAMBIA ESTO EN PRODUCCIÓN!
+# En producción, esta clave DEBE venir de una variable de entorno
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-m#+5x=w3z8y9e@&h-m7#b7q-@p+n5n#k4p_z+0y!*q_w_f-d9#')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS debe incluir tu dominio de Render
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,17 +30,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'ckeditor', # ¡Importante para el editor!
-    'ckeditor_uploader', # ¡Importante para subir imágenes en el editor!
-    'cursos', # Tu aplicación 'cursos'
-    # ... otras aplicaciones si las tienes
+    'ckeditor',
+    'ckeditor_uploader',
+    'cursos',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise debe ir después de SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # Middleware de CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -49,12 +47,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls' # ¡Asegúrate de que apunte a 'core.urls'!
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend/build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,22 +65,31 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application' # ¡Asegúrate de que apunte a 'core.wsgi'!
-
+WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600
-    )
-}
-
+if 'DATABASE_URL' in os.environ:
+    # Producción: usar PostgreSQL de Render
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Desarrollo: usar SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -99,54 +106,93 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
+# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'es-es' # Cambiado a español
-TIME_ZONE = 'America/Bogota' # Zona horaria de Bogotá (o la que prefieras)
+LANGUAGE_CODE = 'es-es'
+
+TIME_ZONE = 'America/Bogota'
+
 USE_I18N = True
+
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-# Configuración de archivos estáticos (CSS, JavaScript, imágenes que forman parte de tu aplicación)
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Directorio donde se recolectan los archivos estáticos en producción
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'frontend/build/static'),
+]
 
-# Configuración de archivos de medios (imágenes, videos subidos por los usuarios a través de CKEditor)
-# Usado para servir archivos subidos
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media' # Directorio donde se guardarán los archivos subidos (ej. imágenes de CKEditor)
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Configuración de CKEditor
-CKEDITOR_UPLOAD_PATH = 'uploads/' # Los archivos subidos desde CKEditor se guardarán en media/uploads/
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full', # Esto habilita la barra de herramientas completa
-        'height': 300,
-        'width': '100%',
-        'extraPlugins': 'codesnippet', # Si necesitas resaltar código (opcional, CKEditor 4 requiere plugin)
-        'filebrowserUploadUrl': '/ckeditor/upload/', # URL a la que CKEditor subirá archivos
-        'filebrowserBrowseUrl': '/ckeditor/browse/', # URL para navegar archivos en el servidor
-        'removePlugins': 'elementspath', # Eliminar la barra de ruta de elementos en la parte inferior del editor
-        'resize_enabled': False, # Desactivar redimensionamiento manual del editor
+# Configuración de WhiteNoise para servir archivos estáticos
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
-# Configuración de CORS (si estás haciendo peticiones desde React a Django)
-CORS_ALLOW_ALL_ORIGINS = True # Esto es solo para desarrollo. Para producción, sé más específico.
-# Opcionalmente, para más seguridad en producción:
-# CORS_ALLOWED_ORIGINS = [
-#    "http://localhost:3000", # Tu frontend de React en desarrollo
-#    "http://127.0.0.1:3000",
-# ]
+# Media files (uploads de usuarios)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# IMPORTANTE: En producción (Render), los archivos de media NO persisten
+# Debes usar un servicio externo como Cloudinary, AWS S3, etc.
+# Para configurar Cloudinary:
+# 1. Instalar: pip install cloudinary dj3-cloudinary-storage
+# 2. Descomentar las líneas de abajo y agregar las variables de entorno
+
+# if not DEBUG:
+#     INSTALLED_APPS.insert(0, 'cloudinary_storage')
+#     INSTALLED_APPS.insert(0, 'cloudinary')
+#     
+#     CLOUDINARY_STORAGE = {
+#         'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+#         'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+#         'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
+#     }
+#     
+#     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# CKEditor Configuration
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+}
+
+# CORS Configuration
+# En producción, especifica SOLO los dominios que necesitan acceso
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = os.environ.get(
+        'CORS_ALLOWED_ORIGINS',
+        ''
+    ).split(',')
+
+CORS_ALLOW_CREDENTIALS = True
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
