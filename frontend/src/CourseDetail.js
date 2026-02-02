@@ -28,6 +28,17 @@ function CourseDetail() {
       .catch(error => console.error("Error fetching course:", error));
   }, [id]);
 
+  // Función para obtener las preguntas del quiz de la API
+  const fetchQuizQuestions = useCallback((leccionId) => {
+    fetch(`http://127.0.0.1:8000/api/lecciones/${leccionId}/quiz_questions/`)
+      .then(response => response.json())
+      .then(data => {
+        setQuizQuestions(data);
+        console.log("Preguntas del quiz cargadas:", data); // Para depuración
+      })
+      .catch(error => console.error("Error fetching quiz questions:", error));
+  }, []); // Dependencia vacía para que la función no cambie.
+
   // Cuando la lección actual cambia, colapsa las actividades y reinicia el quiz
   useEffect(() => {
     if (leccionActual) {
@@ -40,17 +51,6 @@ function CourseDetail() {
       fetchQuizQuestions(leccionActual.id); 
     }
   }, [leccionActual, fetchQuizQuestions]);
-
-  // Función para obtener las preguntas del quiz de la API
-  const fetchQuizQuestions = useCallback((leccionId) => {
-    fetch(`http://127.0.0.1:8000/api/lecciones/${leccionId}/quiz_questions/`)
-      .then(response => response.json())
-      .then(data => {
-        setQuizQuestions(data);
-        console.log("Preguntas del quiz cargadas:", data); // Para depuración
-      })
-      .catch(error => console.error("Error fetching quiz questions:", error));
-  }, []); // Dependencia vacía para que la función no cambie.
 
   const handleLeccionClick = (leccion) => {
     setLeccionActual(leccion);
