@@ -1,6 +1,6 @@
 # mi-plataforma-cursos/core/urls.py
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
@@ -10,6 +10,9 @@ urlpatterns = [
     path('api/', include('cursos.urls')), # Incluye las rutas de tu app 'cursos' bajo '/api/'
     path('ckeditor/', include('ckeditor_uploader.urls')), # ¡Ruta necesaria para CKEditor!
     path('', TemplateView.as_view(template_name='index.html')), # Sirve el frontend React en la raíz
+    # Esta ruta "catch-all" debe ir al final. Sirve el frontend de React para cualquier
+    # ruta no capturada anteriormente, permitiendo que React Router maneje el enrutamiento del lado del cliente.
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ]
 
 # Esto es CRUCIAL para servir archivos de medios (como imágenes subidas con CKEditor)
