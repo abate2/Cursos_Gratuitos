@@ -41,9 +41,14 @@ function CourseList() {
             {/* Si tienes una imagen de curso, puedes usarla aquí */}
             {curso.imagen_url ? (
                 <img src={curso.imagen_url} alt={curso.titulo} 
-                     onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/400x180/E0E0E0/808080?text=Curso"; }}/>
+                     onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/400x180/3b8d99/ffffff?text=Apuntes"; }}/>
             ) : (
-                <img src="https://placehold.co/400x180/E0E0E0/808080?text=Curso" alt="Placeholder de Curso"/>
+                <div className="course-image-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="60px" height="60px">
+                        <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/>
+                    </svg>
+                    <span>Apuntes</span>
+                </div>
             )}
             <div className="course-card-content">
               <h2>{curso.titulo}</h2>
