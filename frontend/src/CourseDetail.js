@@ -123,9 +123,27 @@ function CourseDetail() {
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
 
+  // Calcular el progreso actual
+  const indiceActual = curso.lecciones.findIndex(l => l.id === leccionActual?.id);
+  const totalLecciones = curso.lecciones.length;
+  const porcentaje = totalLecciones > 0 && indiceActual !== -1 
+    ? Math.round(((indiceActual + 1) / totalLecciones) * 100) 
+    : 0;
+
   return (
     <div className="course-detail">
       <h1>{curso.titulo}</h1>
+      {/* Barra de Progreso */}
+      <div className="progress-container">
+        <div className="progress-labels">
+          <span>Progreso</span>
+          <span> {porcentaje}% Completado</span>
+        </div>
+        <div className="progress-track">
+          <div className="progress-fill" style={{ width: `${porcentaje}%` }}></div>
+        </div>
+      </div>
+
       <div className="lecciones-container">
         {/* Panel de menú de lecciones (izquierda) */}
         <div className="lecciones-list">

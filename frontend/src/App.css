@@ -140,7 +140,8 @@ body {
 .course-image-placeholder {
   width: 100%;
   height: 200px; /* Misma altura que las imágenes normales */
-  background-color: #3b8d99; /* Tu color corporativo */
+  /* Degradado diagonal desde tu color cyan a un tono más oscuro y azulado */
+  background: linear-gradient(135deg, #3b8d99 0%, #1a5f7a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -209,7 +210,7 @@ body {
 
 /* --- Estilos para Detalle del Curso y Lección (CourseDetail) --- */
 .course-detail {
-  padding: 30px 20px;
+  padding: 0; /* IMPORTANTE: Eliminamos relleno para que el sidebar toque el borde */
   max-width: 1200px;
   margin: 0 auto;
   background-color: #ffffff;
@@ -217,20 +218,55 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   margin-top: 30px;
   margin-bottom: 30px;
+  overflow: hidden; /* Asegura que el contenido respete las esquinas redondeadas */
 }
 
 .course-detail h1 {
-  color: #2c3e50;
-  margin-bottom: 30px;
+  /* Degradado visible en el título: Gris Azulado -> Azul muy oscuro */
+  background: linear-gradient(135deg, #34495e 0%, #15202b 100%);
+  color: #ecf0f1; /* Texto blanco/claro */
+  margin: 0; /* Quitamos margen para pegar al borde */
+  padding: 30px 20px 10px 20px; /* Reducimos padding abajo para acercar la barra */
   font-size: 2.8em;
   text-align: center;
+  border-bottom: none; /* Quitamos el borde para que se fusione con el progreso */
 }
 
 .lecciones-container {
   display: flex;
-  gap: 30px;
+  gap: 0; /* Eliminamos el espacio entre columnas para que el sidebar toque el contenido */
   flex-wrap: wrap;
-  align-items: flex-start; /* Alinea los elementos al inicio del contenedor flex */
+  align-items: stretch; /* Hacemos que el sidebar y el contenido tengan la misma altura */
+}
+
+/* Aseguramos que la barra de progreso tenga espacio (ya que quitamos padding al padre) */
+.progress-container {
+  padding: 0 40px 30px 40px; /* Sin padding arriba, fusionado con el título */
+  /* Continuación visual del degradado oscuro */
+  background: linear-gradient(135deg, #243342 0%, #15202b 100%);
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #bdc3c7; /* Texto gris claro para que se lea sobre fondo oscuro */
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.1); /* Carril semitransparente para integrarse mejor */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #3b8d99 0%, #1a5f7a 100%); /* Mismo ángulo de degradado que el sidebar */
+  transition: width 0.5s ease;
 }
 
 .lecciones-list {
@@ -239,43 +275,95 @@ body {
   max-width: 250px; /* Ancho máximo para la lista de lecciones */
   min-width: 150px; /* Ancho mínimo para la lista de lecciones, para asegurar legibilidad */
   width: 100%; /* Ocupa el 100% de su espacio disponible, hasta max-width */
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  /* Degradado fuerte en el sidebar para dar profundidad */
+  background: linear-gradient(180deg, #34495e 0%, #15202b 100%);
+  padding: 0; /* SIN PADDING para que el encabezado toque los bordes */
+  border-radius: 0; /* Quitamos bordes redondeados para que sea una columna recta */
+  border: none; /* Sin bordes claros en modo oscuro */
+  box-shadow: none; /* Quitamos sombra ya que ahora es estructural */
+  border-right: 1px solid #34495e; /* Línea separadora vertical sutil */
 }
 
 .lecciones-list h2 {
-  font-size: 1.5em;
-  color: #34495e;
-  margin-top: 0;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 10px;
+  font-size: 1.2em;
+  /* Fondo degradado para el encabezado estilo "Ribbon" */
+  background: linear-gradient(135deg, #3b8d99 0%, #1a5f7a 100%);
+  color: white;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: none;
 }
 
 .lecciones-list ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  counter-reset: lesson-counter; /* Inicializamos el contador CSS */
 }
 
 .lecciones-list li {
-  background-color: #e9ecef;
-  margin-bottom: 8px;
-  padding: 12px 15px;
-  border-radius: 6px;
+  position: relative; /* Necesario para posicionar el número */
+  background-color: transparent; /* TRANSPARENTE: Para dejar ver el degradado del padre */
+  margin: 0; /* Sin margen para que parezca una lista continua */
+  padding: 15px 15px 15px 60px; /* Espacio extra a la izquierda para el número */
+  border-radius: 0; /* Bordes rectos */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Línea divisoria muy sutil */
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
   text-align: left;
   font-weight: 500;
-  color: #555;
+  color: #ecf0f1; /* Texto claro para contraste */
+}
+
+/* Estilo para el NÚMERO a la izquierda (pseudo-elemento) */
+.lecciones-list li::before {
+  counter-increment: lesson-counter; /* Incrementa el número automáticamente */
+  content: counter(lesson-counter); /* Muestra el número */
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 45px; /* Ancho de la barra numérica */
+  background-color: rgba(0, 0, 0, 0.2); /* Fondo semitransparente oscuro */
+  color: #bdc3c7; /* Número en gris claro */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1em;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.lecciones-list li:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.05); /* Efecto de luz suave al pasar el mouse */
+  color: #ffffff;
+  padding-left: 65px; /* Pequeño efecto de desplazamiento del texto */
+}
+
+/* Efecto hover en el número */
+.lecciones-list li:hover:not(.active)::before {
+  background-color: #3b8d99;
+  color: white;
 }
 
 .lecciones-list li.active {
-  background-color: #007bff;
+  background-color: rgba(0, 0, 0, 0.2); /* Oscurece ligeramente la selección */
+  color: #ffffff; /* Texto blanco brillante */
+  font-weight: 700;
+  box-shadow: none;
+  transform: none;
+}
+
+/* El número del item activo se llena con tu degradado */
+.lecciones-list li.active::before {
+  background: linear-gradient(135deg, #3b8d99 0%, #1a5f7a 100%);
   color: white;
-  font-weight: bold;
+  width: 50px; /* Se hace un poco más ancho para destacar */
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
 .leccion-content {
@@ -283,20 +371,21 @@ body {
   flex-shrink: 1; /* ¡NUEVO! Permite que se encoja cuando sea necesario */
   flex-basis: 0; /* ¡NUEVO! Permite que el navegador decida su tamaño base para un mejor envolvimiento */
   background-color: #ffffff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  /* Degradado acentuado: De un Rojizo pastel fuerte a un Azul cielo intenso */
+  background: linear-gradient(135deg, #ffb7b2 0%, #a9c9ff 100%);
+  padding: 30px 40px; /* Más padding interno para compensar la falta de padding en el padre */
+  border-radius: 0;
+  box-shadow: none;
   text-align: left;
   min-width: 0; /* Permite que el contenido flex se encoja correctamente */
 }
 
 /* Estilos para el TÍTULO DE LA LECCIÓN (h3) */
 .leccion-content h3 {
-  font-size: 2em;
-  color: #34495e;
+  font-size: 2.2em;
+  color: #000000; /* Negro puro para el título principal de la lección */
   margin-top: 0;
   margin-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
   padding-bottom: 10px;
   white-space: normal; /* Permite que el texto se envuelva */
   overflow: visible; /* Asegura que todo el contenido sea visible */
@@ -311,7 +400,7 @@ body {
 .leccion-content p {
   font-size: 1.1em;
   line-height: 1.7;
-  color: #555;
+  color: #222; /* Texto ligeramente más oscuro para mejor lectura */
 }
 
 /* Estilos para el contenido CKEditor (tablas, imágenes, etc.) */
@@ -360,17 +449,18 @@ body {
 .leccion-buttons button {
   padding: 12px 25px;
   font-size: 1em;
-  background-color: #007bff;
+  background: linear-gradient(135deg, #3b8d99 0%, #1a5f7a 100%); /* Botones con degradado */
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .leccion-buttons button:hover {
-  background-color: #0056b3;
+  transform: translateY(-2px); /* Efecto de elevación */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 .leccion-buttons button:disabled {
@@ -382,15 +472,18 @@ body {
 /* --- Estilos para la sección de actividades (CourseDetail) --- */
 .activities-section {
   margin-top: 30px;
-  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  /* Fondo totalmente transparente para ver el degradado limpio */
+  background-color: transparent;
+  backdrop-filter: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: none;
   overflow: hidden;
 }
 
 .activities-toggle {
-  background-color: #007bff;
+  /* Unificamos el color con el resto de la UI */
+  background: linear-gradient(135deg, #3b8d99 0%, #1a5f7a 100%);
   color: white;
   padding: 15px 20px;
   cursor: pointer;
@@ -399,36 +492,41 @@ body {
   justify-content: space-between;
   align-items: center;
   font-size: 1.2em;
-  font-weight: bold;
-  border-bottom: 1px solid #0056b3;
-  transition: background-color 0.3s ease;
-}
-
-.activities-toggle:hover {
-  background-color: #0056b3;
+  font-weight: 600;
+  border-bottom: none;
+  transition: none;
 }
 
 .activities-content {
-  padding: 20px;
-  background-color: #ffffff;
+  padding: 25px;
+  background-color: transparent; /* Dejamos que se vea el fondo de la sección */
   text-align: center;
 }
 
+/* Añadido para quitar el subrayado de los enlaces que envuelven botones */
+.activities-content a,
+.leccion-buttons a {
+  text-decoration: none;
+}
+
 .activity-button {
-  padding: 10px 20px;
-  background-color: #28a745;
+  padding: 12px 25px;
+  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s ease;
-  margin-bottom: 10px;
+  font-size: 1.1em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 10px auto;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: block;
+  max-width: 300px;
 }
 
 .activity-button:hover {
-  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 /* --- Estilos para el Juego de Memorizar (MemoryGame) --- */
@@ -587,11 +685,11 @@ body {
 /* --- ESTILOS DEL MINI-CUESTIONARIO --- */
 .mini-quiz-container {
   margin-top: 30px;
-  padding: 20px;
-  border: 1px solid #e0e0e0;
+  padding: 0; /* Quitamos padding extra, ya lo tiene el contenedor */
+  border: none; /* Quitamos borde, ya lo tiene el contenedor */
   border-radius: 8px;
-  background-color: #fcfcfc;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background-color: transparent; /* Dejamos que se vea el fondo de la sección */
+  box-shadow: none; /* Quitamos sombra, ya la tiene el contenedor */
   text-align: center;
 }
 
@@ -600,12 +698,12 @@ body {
 .quiz-retake-button {
   padding: 12px 25px;
   font-size: 1.1em;
-  background-color: #007bff; /* Color primario para quiz */
+  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin: 10px auto; /* Centrar y dar margen */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: block; /* Ocupa todo el ancho si está solo */
@@ -615,8 +713,8 @@ body {
 .quiz-start-button:hover,
 .quiz-navigation-button:hover,
 .quiz-retake-button:hover {
-  background-color: #0056b3;
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 .quiz-start-button:disabled,
@@ -629,12 +727,12 @@ body {
 }
 
 .quiz-question-card {
-  background-color: #e9f7ef; /* Fondo verde claro para la pregunta */
-  border: 1px solid #d4edda;
+  background-color: transparent; /* Fondo transparente para ver el degradado */
+  border: none;
   border-radius: 10px;
   padding: 25px;
   margin-top: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 .quiz-question-card h4 {
@@ -683,12 +781,12 @@ body {
 }
 
 .quiz-results-card {
-  background-color: #fff3cd; /* Fondo amarillo claro para resultados */
-  border: 1px solid #ffeeba;
+  background-color: transparent; /* Fondo transparente para ver el degradado */
+  border: none;
   border-radius: 10px;
   padding: 25px;
   margin-top: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 .quiz-results-card h4 {
